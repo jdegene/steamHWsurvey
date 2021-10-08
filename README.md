@@ -1,6 +1,7 @@
 # steamHWsurvey
-Short script to collect current months steam hardware survey data or past data from 
-This is a script to fetch historic Steam Hardware Survey Data from web.archive.org or current data from steam itself
+Short script to collect current months steam hardware survey data or past data from web.archive.org
+
+shs.csv last updated 2021/10
 
 ## General Information posted on the Steam Hardware Survey Site
 
