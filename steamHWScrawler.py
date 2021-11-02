@@ -10,17 +10,6 @@ import time
 # Dates in output file are dates of measurments (steam shows November values in December)
 # Dates in queries and functions (eq current month december to fetch november dates)
 
-
-"""
-url = 'http://web.archive.org/web/20080214/http://store.steampowered.com/hwsurvey'
-url = 'http://web.archive.org/web/20200815/http://store.steampowered.com/hwsurvey'
-url = 'https://store.steampowered.com/hwsurvey'
-
-r = requests.get(url)
-
-soup_all = BeautifulSoup(r.text, "html5lib") 
-"""
-
 def get_soup(url):
     r = requests.get(url)
     soup_all = BeautifulSoup(r.text, "html5lib") 
@@ -217,7 +206,7 @@ def get_archive_soup_year_month(month=1, year=2020, day=15):
     
     
 
-def build_from_scratch(out_csv_path="D:/Stuff/Projects/steamHardwareSurvey/shs.csv"):
+def build_from_scratch(out_csv_path="shs.csv"):
     """ Builds a csv file from scratch """
     
     try:
@@ -248,7 +237,7 @@ def build_from_scratch(out_csv_path="D:/Stuff/Projects/steamHardwareSurvey/shs.c
     
     
 def update_month_from_archive(month=1, year=2020, day=15,
-                             out_csv_path="D:/Stuff/Projects/steamHardwareSurvey/shs.csv"):
+                             out_csv_path="shs.csv"):
     """ Loads a specific month and adds to out_csv_path file """
     
     month_df = get_archive_soup_year_month(month=month, year=year, day=day)
@@ -266,7 +255,7 @@ def update_month_from_archive(month=1, year=2020, day=15,
     out_df.to_csv(out_csv_path, encoding='utf8', index=False, float_format='%.4f')
 
 
-def update_month_current_steam( out_csv_path="D:/Stuff/Projects/steamHardwareSurvey/shs.csv"):
+def update_month_current_steam( out_csv_path="shs.csv"):
     """ Reads current steam HW site"""
     
     soup = get_soup("https://store.steampowered.com/hwsurvey")
