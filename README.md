@@ -1,8 +1,6 @@
 # steamHWsurvey
 Short script to collect current months steam hardware survey data or past data from web.archive.org
 
-shs.csv last updated 2021/10
-
 ## General Information posted on the Steam Hardware Survey Site
 
 STEAM HARDWARE SURVEY FIX – 5/2/2018
