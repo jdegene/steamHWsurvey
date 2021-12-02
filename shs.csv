@@ -47378,7 +47378,6 @@ date,category,name,change,percentage
 2021-10-01,VRAM,6143 MB,0.0033,0.2395
 2021-10-01,VRAM,8191 MB,-0.0014,0.2255
 2021-10-01,VRAM,Other,0.0001,0.0256
-2021-10-01,Video Card Description,,0.0001,0.0018
 2021-10-01,Video Card Description,AMD Radeon Graphics,0.0010,0.0107
 2021-10-01,Video Card Description,AMD Radeon HD 7700 Series,0.0015,0.0015
 2021-10-01,Video Card Description,AMD Radeon HD 8800 Series,0.0007,0.0084
@@ -47481,3 +47480,346 @@ date,category,name,change,percentage
 2021-10-01,Video Card Description,NVIDIA GeForce RTX 3080 Ti,0.0005,0.0030
 2021-10-01,Video Card Description,NVIDIA GeForce RTX 3090,0.0002,0.0043
 2021-10-01,Video Card Description,Other,0.0033,0.1121
+2021-10-01,Video Card Description,,0.0001,0.0018
+2021-11-01,Free Hard Drive Space,1 TB to 2 TB,-0.0059,0.0764
+2021-11-01,Free Hard Drive Space,10 GB to  99 GB,0.0047,0.1776
+2021-11-01,Free Hard Drive Space,100 GB to 249 GB,0.0074,0.2495
+2021-11-01,Free Hard Drive Space,2 TB to 3 TB,0.0000,0.0165
+2021-11-01,Free Hard Drive Space,250 GB to 499 GB,0.0013,0.2356
+2021-11-01,Free Hard Drive Space,3 TB to 4 TB,-0.0003,0.0115
+2021-11-01,Free Hard Drive Space,500 GB to 749 GB,0.0000,0.1155
+2021-11-01,Free Hard Drive Space,750 GB to 999 GB,-0.0060,0.0950
+2021-11-01,Free Hard Drive Space,Above 4 TB,-0.0016,0.0110
+2021-11-01,Free Hard Drive Space,Less than 10 GB,0.0003,0.0113
+2021-11-01,Free Hard Drive Space,Unspecified,0.0000,0.0000
+2021-11-01,Intel CPU Speeds,1.4 Ghz to 1.49 Ghz,-0.0001,0.0050
+2021-11-01,Intel CPU Speeds,1.5 Ghz to 1.69 Ghz,0.0000,0.0067
+2021-11-01,Intel CPU Speeds,1.7 Ghz to 1.99 Ghz,-0.0002,0.0273
+2021-11-01,Intel CPU Speeds,2.0 Ghz to 2.29 Ghz,0.0004,0.0369
+2021-11-01,Intel CPU Speeds,2.3 Ghz to 2.69 Ghz,-0.0013,0.1799
+2021-11-01,Intel CPU Speeds,2.7 Ghz to 2.99 Ghz,-0.0026,0.1345
+2021-11-01,Intel CPU Speeds,3.0 Ghz to 3.29 Ghz,-0.0025,0.0851
+2021-11-01,Intel CPU Speeds,3.3 Ghz to 3.69 Ghz,-0.0019,0.1553
+2021-11-01,Intel CPU Speeds,3.7 Ghz and above,0.0002,0.0462
+2021-11-01,Intel CPU Speeds,Below 1.4 Ghz,0.0002,0.0136
+2021-11-01,Language,Arabic,0.0000,0.0000
+2021-11-01,Language,Bulgarian,0.0000,0.0005
+2021-11-01,Language,Czech,0.0002,0.0056
+2021-11-01,Language,Danish,0.0001,0.0028
+2021-11-01,Language,Dutch,0.0000,0.0034
+2021-11-01,Language,English,-0.0079,0.3803
+2021-11-01,Language,Finnish,0.0000,0.0019
+2021-11-01,Language,French,0.0005,0.0260
+2021-11-01,Language,German,0.0006,0.0337
+2021-11-01,Language,Greek,-0.0001,0.0010
+2021-11-01,Language,Hungarian,0.0000,0.0033
+2021-11-01,Language,Italian,0.0000,0.0076
+2021-11-01,Language,Japanese,-0.0003,0.0209
+2021-11-01,Language,Korean,0.0008,0.0168
+2021-11-01,Language,Norwegian,0.0000,0.0014
+2021-11-01,Language,Polish,0.0005,0.0191
+2021-11-01,Language,Portuguese,-0.0001,0.0047
+2021-11-01,Language,Portuguese-Brazil,-0.0026,0.0352
+2021-11-01,Language,Romanian,0.0000,0.0016
+2021-11-01,Language,Russian,0.0027,0.1107
+2021-11-01,Language,Simplified Chinese,0.0101,0.2211
+2021-11-01,Language,Spanish - Latin America,0.0000,0.0029
+2021-11-01,Language,Spanish - Spain,-0.0007,0.0537
+2021-11-01,Language,Swedish,0.0001,0.0035
+2021-11-01,Language,Thai,-0.0037,0.0123
+2021-11-01,Language,Traditional Chinese,-0.0005,0.0113
+2021-11-01,Language,Turkish,0.0004,0.0153
+2021-11-01,Language,Ukrainian,0.0002,0.0018
+2021-11-01,Language,Vietnamese,-0.0004,0.0016
+2021-11-01,Multi-Monitor Desktop Resolution,1920 x 2160,-0.0002,0.0168
+2021-11-01,Multi-Monitor Desktop Resolution,2560 x 2520,-0.0002,0.0054
+2021-11-01,Multi-Monitor Desktop Resolution,2732 x 768,-0.0002,0.0060
+2021-11-01,Multi-Monitor Desktop Resolution,2880 x 1800,0.0002,0.0054
+2021-11-01,Multi-Monitor Desktop Resolution,2944 x 1080,-0.0006,0.0072
+2021-11-01,Multi-Monitor Desktop Resolution,3000 x 1920,0.0008,0.0328
+2021-11-01,Multi-Monitor Desktop Resolution,3200 x 1080,-0.0006,0.0382
+2021-11-01,Multi-Monitor Desktop Resolution,3280 x 1080,0.0002,0.0230
+2021-11-01,Multi-Monitor Desktop Resolution,3286 x 1080,-0.0004,0.0430
+2021-11-01,Multi-Monitor Desktop Resolution,3360 x 1080,-0.0010,0.0248
+2021-11-01,Multi-Monitor Desktop Resolution,3520 x 1080,0.0000,0.0312
+2021-11-01,Multi-Monitor Desktop Resolution,3600 x 1080,0.0006,0.0294
+2021-11-01,Multi-Monitor Desktop Resolution,3640 x 1920,0.0000,0.0166
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1080,-0.0034,0.7006
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1081,0.0000,0.0104
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1082,0.0002,0.0074
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1083,0.0000,0.0084
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1084,0.0002,0.0074
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1085,-0.0002,0.0066
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1086,-0.0002,0.0068
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1087,0.0000,0.0068
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1088,-0.0002,0.0070
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1089,0.0000,0.0058
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 1200,-0.0006,0.0198
+2021-11-01,Multi-Monitor Desktop Resolution,3840 x 2160,-0.0006,0.0102
+2021-11-01,Multi-Monitor Desktop Resolution,4000 x 2560,0.0004,0.0054
+2021-11-01,Multi-Monitor Desktop Resolution,4480 x 1080,-0.0006,0.0202
+2021-11-01,Multi-Monitor Desktop Resolution,4480 x 1440,0.0042,0.1786
+2021-11-01,Multi-Monitor Desktop Resolution,4920 x 1920,-0.0004,0.0070
+2021-11-01,Multi-Monitor Desktop Resolution,5120 x 1440,0.0014,0.0554
+2021-11-01,Multi-Monitor Desktop Resolution,5120 x 2880,0.0000,0.0042
+2021-11-01,Multi-Monitor Desktop Resolution,5360 x 1440,-0.0002,0.0170
+2021-11-01,Multi-Monitor Desktop Resolution,5760 x 1080,-0.0002,0.0400
+2021-11-01,Multi-Monitor Desktop Resolution,5760 x 2160,0.0002,0.0452
+2021-11-01,Multi-Monitor Desktop Resolution,6000 x 1440,0.0002,0.0064
+2021-11-01,Multi-Monitor Desktop Resolution,6400 x 1440,0.0002,0.0148
+2021-11-01,Multi-Monitor Desktop Resolution,6400 x 2160,-0.0004,0.0166
+2021-11-01,Multi-Monitor Desktop Resolution,7680 x 1440,0.0000,0.0050
+2021-11-01,Multi-Monitor Desktop Resolution,7680 x 2160,0.0000,0.0172
+2021-11-01,Multi-Monitor Desktop Resolution,Other,0.0094,0.4900
+2021-11-01,OS Version,"""Arch Linux"" 64 bit",0.0001,0.0014
+2021-11-01,OS Version,"""Manjaro Linux"" 64 bit",0.0002,0.0015
+2021-11-01,OS Version,Linux 5.x 64 bit,0.0005,0.0005
+2021-11-01,OS Version,Linux Mint 20.2 64 bit,0.0001,0.0008
+2021-11-01,OS Version,MacOS 10.13.6 64 bit,0.0001,0.0017
+2021-11-01,OS Version,MacOS 10.14.6 64 bit,0.0000,0.0017
+2021-11-01,OS Version,MacOS 10.15.7 64 bit,0.0000,0.0030
+2021-11-01,OS Version,MacOS 10.16.0 64 bit,-0.0097,0.0018
+2021-11-01,OS Version,MacOS 11.2.3 64 bit,0.0006,0.0006
+2021-11-01,OS Version,MacOS 11.4.0 64 bit,0.0010,0.0010
+2021-11-01,OS Version,MacOS 11.5.2 64 bit,0.0007,0.0014
+2021-11-01,OS Version,MacOS 11.6.0 64 bit,0.0019,0.0048
+2021-11-01,OS Version,MacOS 11.6.1 64 bit,0.0006,0.0006
+2021-11-01,OS Version,MacOS 12.0.1 64 bit,0.0063,0.0063
+2021-11-01,OS Version,Ubuntu 20.04.3 LTS 64 bit,0.0000,0.0019
+2021-11-01,OS Version,Ubuntu 21.10 64 bit,0.0006,0.0006
+2021-11-01,OS Version,Windows 10,0.0000,0.0009
+2021-11-01,OS Version,Windows 10 64 bit,-0.0605,0.8338
+2021-11-01,OS Version,Windows 11 64 bit,0.0646,0.0828
+2021-11-01,OS Version,Windows 7,-0.0001,0.0021
+2021-11-01,OS Version,Windows 7 64 bit,-0.0055,0.0334
+2021-11-01,OS Version,Windows 8 64 bit,-0.0001,0.0005
+2021-11-01,OS Version,Windows 8.1 64 bit,-0.0002,0.0074
+2021-11-01,Other Settings,AES,0.0014,0.9543
+2021-11-01,Other Settings,AVX,0.0019,0.9446
+2021-11-01,Other Settings,AVX2,0.0207,0.8598
+2021-11-01,Other Settings,AVX512CD,0.0087,0.0505
+2021-11-01,Other Settings,AVX512ER,0.0000,0.0000
+2021-11-01,Other Settings,AVX512F,0.0087,0.0505
+2021-11-01,Other Settings,AVX512PF,0.0000,0.0000
+2021-11-01,Other Settings,AVX512VNNI,0.0085,0.0493
+2021-11-01,Other Settings,CMPXCHG16B,0.0000,0.9998
+2021-11-01,Other Settings,FCMOV,-0.0014,0.9730
+2021-11-01,Other Settings,HyperThreading,0.0102,0.7331
+2021-11-01,Other Settings,LAHF / SAHF,0.0000,0.9999
+2021-11-01,Other Settings,NTFS,-0.0019,0.9602
+2021-11-01,Other Settings,PrefetchW,0.0000,0.0000
+2021-11-01,Other Settings,SHA,0.0190,0.3248
+2021-11-01,Other Settings,SSE2,0.0000,1.0000
+2021-11-01,Other Settings,SSE3,0.0000,1.0000
+2021-11-01,Other Settings,SSE4.1,0.0002,0.9886
+2021-11-01,Other Settings,SSE4.2,0.0002,0.9844
+2021-11-01,Other Settings,SSE4a,0.0062,0.3074
+2021-11-01,Other Settings,SSSE3,0.0001,0.9925
+2021-11-01,Physical CPUs,1 cpu,-0.0001,0.0021
+2021-11-01,Physical CPUs,10 cpus,0.0009,0.0083
+2021-11-01,Physical CPUs,11 cpus,0.0000,0.0000
+2021-11-01,Physical CPUs,12 cpus,0.0005,0.0119
+2021-11-01,Physical CPUs,14 cpus,0.0000,0.0001
+2021-11-01,Physical CPUs,15 cpus,0.0000,0.0000
+2021-11-01,Physical CPUs,16 cpus,0.0003,0.0035
+2021-11-01,Physical CPUs,18 cpus,0.0000,0.0002
+2021-11-01,Physical CPUs,2 cpus,-0.0036,0.1254
+2021-11-01,Physical CPUs,20 cpus,0.0000,0.0001
+2021-11-01,Physical CPUs,22 cpus,0.0000,0.0000
+2021-11-01,Physical CPUs,24 cpus,0.0000,0.0002
+2021-11-01,Physical CPUs,26 cpus,0.0000,0.0000
+2021-11-01,Physical CPUs,28 cpus,0.0000,0.0000
+2021-11-01,Physical CPUs,3 cpus,-0.0002,0.0057
+2021-11-01,Physical CPUs,30 cpus,0.0000,0.0000
+2021-11-01,Physical CPUs,32 cpus,0.0000,0.0001
+2021-11-01,Physical CPUs,36 cpus,0.0000,0.0000
+2021-11-01,Physical CPUs,4 cpus,-0.0109,0.3612
+2021-11-01,Physical CPUs,5 cpus,0.0000,0.0002
+2021-11-01,Physical CPUs,52 cpus,0.0000,0.0000
+2021-11-01,Physical CPUs,6 cpus,0.0052,0.3119
+2021-11-01,Physical CPUs,64 cpus,0.0000,0.0000
+2021-11-01,Physical CPUs,7 cpus,0.0000,0.0000
+2021-11-01,Physical CPUs,8 cpus,0.0080,0.1692
+2021-11-01,Physical CPUs,9 cpus,0.0000,0.0000
+2021-11-01,Primary Display Resolution,1024 x 768,0.0000,0.0028
+2021-11-01,Primary Display Resolution,1280 x 1024,0.0000,0.0081
+2021-11-01,Primary Display Resolution,1280 x 720,-0.0099,0.0030
+2021-11-01,Primary Display Resolution,1280 x 800,0.0000,0.0031
+2021-11-01,Primary Display Resolution,1360 x 768,-0.0003,0.0118
+2021-11-01,Primary Display Resolution,1366 x 768,-0.0025,0.0709
+2021-11-01,Primary Display Resolution,1440 x 900,0.0006,0.0258
+2021-11-01,Primary Display Resolution,1600 x 900,-0.0005,0.0186
+2021-11-01,Primary Display Resolution,1680 x 1050,-0.0001,0.0128
+2021-11-01,Primary Display Resolution,1920 x 1080,0.0061,0.6711
+2021-11-01,Primary Display Resolution,1920 x 1200,0.0000,0.0063
+2021-11-01,Primary Display Resolution,2560 x 1080,-0.0001,0.0101
+2021-11-01,Primary Display Resolution,2560 x 1440,0.0035,0.0906
+2021-11-01,Primary Display Resolution,2560 x 1600,0.0016,0.0070
+2021-11-01,Primary Display Resolution,3440 x 1440,0.0004,0.0126
+2021-11-01,Primary Display Resolution,3840 x 2160,0.0004,0.0243
+2021-11-01,Primary Display Resolution,Other,0.0010,0.0213
+2021-11-01,System RAM,10 GB,-0.0001,0.0034
+2021-11-01,System RAM,11 GB,0.0000,0.0018
+2021-11-01,System RAM,12 GB,-0.0002,0.0221
+2021-11-01,System RAM,13 GB,0.0000,0.0004
+2021-11-01,System RAM,14 GB,-0.0025,0.0116
+2021-11-01,System RAM,15 GB,0.0005,0.0282
+2021-11-01,System RAM,16 GB,0.0042,0.4623
+2021-11-01,System RAM,2 GB,0.0000,0.0031
+2021-11-01,System RAM,3 GB,-0.0004,0.0128
+2021-11-01,System RAM,4 GB,-0.0017,0.0387
+2021-11-01,System RAM,5 GB,0.0000,0.0021
+2021-11-01,System RAM,6 GB,-0.0004,0.0224
+2021-11-01,System RAM,7 GB,0.0000,0.0283
+2021-11-01,System RAM,8 GB,-0.0041,0.2280
+2021-11-01,System RAM,9 GB,0.0000,0.0002
+2021-11-01,System RAM,Less than 2 GB,-0.0001,0.0006
+2021-11-01,System RAM,More than 16 GB,0.0048,0.1338
+2021-11-01,Total Hard Drive Space,10 GB to  99 GB,0.0001,0.0033
+2021-11-01,Total Hard Drive Space,100 GB to 249 GB,-0.0001,0.0970
+2021-11-01,Total Hard Drive Space,250 GB to 499 GB,0.0071,0.2059
+2021-11-01,Total Hard Drive Space,500 GB to 749 GB,-0.0007,0.0443
+2021-11-01,Total Hard Drive Space,750 GB to 999 GB,0.0015,0.1454
+2021-11-01,Total Hard Drive Space,Above 1 TB,-0.0079,0.5041
+2021-11-01,Total Hard Drive Space,Less than 10 GB,0.0000,0.0001
+2021-11-01,Total Hard Drive Space,Unspecified,0.0000,0.0000
+2021-11-01,VR Headsets,ALVR,-0.0002,0.0002
+2021-11-01,VR Headsets,HTC Vive,-0.0013,0.0918
+2021-11-01,VR Headsets,HTC Vive Cosmos,-0.0009,0.0169
+2021-11-01,VR Headsets,HTC Vive Elite,-0.0000,0.0001
+2021-11-01,VR Headsets,HTC Vive Pro,-0.0028,0.0193
+2021-11-01,VR Headsets,HTC Vive Pro 2,0.0004,0.0041
+2021-11-01,VR Headsets,Iriun VR,-0.0003,0.0003
+2021-11-01,VR Headsets,Oculus Quest,-0.0002,0.0478
+2021-11-01,VR Headsets,Oculus Quest 2,0.0130,0.3632
+2021-11-01,VR Headsets,Oculus Rift,-0.0019,0.0486
+2021-11-01,VR Headsets,Oculus Rift DK2,0.0000,0.0003
+2021-11-01,VR Headsets,Oculus Rift S,-0.0025,0.1600
+2021-11-01,VR Headsets,Other,-0.0005,0.0107
+2021-11-01,VR Headsets,Pico Neo 2,0.0000,0.0005
+2021-11-01,VR Headsets,Pico Neo 3,0.0002,0.0022
+2021-11-01,VR Headsets,Pimax 5K Plus,0.0002,0.0013
+2021-11-01,VR Headsets,Pimax 8K,0.0002,0.0017
+2021-11-01,VR Headsets,Pimax Artisan,-0.0001,0.0001
+2021-11-01,VR Headsets,Riftcat Vridge,0.0000,0.0039
+2021-11-01,VR Headsets,Sony PlayStation VR,-0.0000,0.0017
+2021-11-01,VR Headsets,Valve Index HMD,-0.0039,0.1692
+2021-11-01,VR Headsets,Windows Mixed Reality,0.0004,0.0559
+2021-11-01,VRAM,10239 MB,0.0016,0.0194
+2021-11-01,VRAM,1024 MB,0.0005,0.0951
+2021-11-01,VRAM,11263 MB,0.0003,0.0275
+2021-11-01,VRAM,12287 MB,0.0048,0.0302
+2021-11-01,VRAM,2047 MB,-0.0012,0.1015
+2021-11-01,VRAM,24575 MB,0.0003,0.0079
+2021-11-01,VRAM,3071 MB,-0.0022,0.0396
+2021-11-01,VRAM,4095 MB,0.0008,0.1735
+2021-11-01,VRAM,5119 MB,-0.0016,0.0069
+2021-11-01,VRAM,512 MB,0.0003,0.0114
+2021-11-01,VRAM,6143 MB,-0.0140,0.2255
+2021-11-01,VRAM,8191 MB,0.0088,0.2343
+2021-11-01,VRAM,Other,0.0017,0.0273
+2021-11-01,Video Card Description,AMD Radeon Graphics,0.0013,0.0120
+2021-11-01,Video Card Description,AMD Radeon HD 8800 Series,-0.0003,0.0081
+2021-11-01,Video Card Description,AMD Radeon R5 Graphics,-0.0001,0.0025
+2021-11-01,Video Card Description,AMD Radeon R7 Graphics,-0.0002,0.0026
+2021-11-01,Video Card Description,AMD Radeon RX 460,0.0002,0.0022
+2021-11-01,Video Card Description,AMD Radeon RX 470,-0.0002,0.0023
+2021-11-01,Video Card Description,AMD Radeon RX 480,0.0001,0.0036
+2021-11-01,Video Card Description,AMD Radeon RX 550,-0.0001,0.0046
+2021-11-01,Video Card Description,AMD Radeon RX 5500 XT,-0.0001,0.0029
+2021-11-01,Video Card Description,AMD Radeon RX 560,-0.0001,0.0032
+2021-11-01,Video Card Description,AMD Radeon RX 5600 XT,-0.0001,0.0027
+2021-11-01,Video Card Description,AMD Radeon RX 570,-0.0002,0.0123
+2021-11-01,Video Card Description,AMD Radeon RX 5700,-0.0001,0.0016
+2021-11-01,Video Card Description,AMD Radeon RX 5700 XT,-0.0002,0.0077
+2021-11-01,Video Card Description,AMD Radeon RX 580,-0.0002,0.0158
+2021-11-01,Video Card Description,AMD Radeon RX 580 2048SP,0.0001,0.0016
+2021-11-01,Video Card Description,AMD Radeon RX 590 Series,0.0000,0.0025
+2021-11-01,Video Card Description,AMD Radeon RX 6700 XT,0.0002,0.0019
+2021-11-01,Video Card Description,AMD Radeon RX Vega,-0.0001,0.0016
+2021-11-01,Video Card Description,AMD Radeon RX Vega 11 Graphics,-0.0001,0.0042
+2021-11-01,Video Card Description,AMD Radeon Vega 3 Graphics,0.0002,0.0047
+2021-11-01,Video Card Description,AMD Radeon Vega 8 Graphics,-0.0002,0.0115
+2021-11-01,Video Card Description,Apple G13G,0.0017,0.0017
+2021-11-01,Video Card Description,Intel HD Graphics 3000,0.0000,0.0033
+2021-11-01,Video Card Description,Intel HD Graphics 4000,-0.0002,0.0054
+2021-11-01,Video Card Description,Intel HD Graphics 4600,0.0000,0.0036
+2021-11-01,Video Card Description,Intel HD Graphics 520,-0.0001,0.0041
+2021-11-01,Video Card Description,Intel HD Graphics 530,-0.0001,0.0018
+2021-11-01,Video Card Description,Intel HD Graphics 5500,-0.0002,0.0028
+2021-11-01,Video Card Description,Intel HD Graphics 6000,0.0001,0.0025
+2021-11-01,Video Card Description,Intel HD Graphics 620,-0.0002,0.0051
+2021-11-01,Video Card Description,Intel HD Graphics 630,-0.0001,0.0022
+2021-11-01,Video Card Description,Intel Haswell,-0.0001,0.0039
+2021-11-01,Video Card Description,Intel Iris Plus Graphics,0.0016,0.0016
+2021-11-01,Video Card Description,Intel Iris Plus Graphics 640,-0.0001,0.0022
+2021-11-01,Video Card Description,Intel Ivy Bridge,-0.0003,0.0031
+2021-11-01,Video Card Description,Intel Sandy Bridge,-0.0001,0.0018
+2021-11-01,Video Card Description,Intel UHD Graphics 620,-0.0001,0.0083
+2021-11-01,Video Card Description,Intel UHD Graphics 630,-0.0003,0.0048
+2021-11-01,Video Card Description,Intel(R) Iris(R) Plus Graphics,-0.0003,0.0020
+2021-11-01,Video Card Description,Intel(R) Iris(R) Xe Graphics,0.0006,0.0060
+2021-11-01,Video Card Description,Intel(R) UHD Graphics,0.0003,0.0106
+2021-11-01,Video Card Description,Intel(R) UHD Graphics 630,0.0000,0.0021
+2021-11-01,Video Card Description,NVIDIA GeForce 920M,-0.0001,0.0016
+2021-11-01,Video Card Description,NVIDIA GeForce 940M,-0.0001,0.0046
+2021-11-01,Video Card Description,NVIDIA GeForce GT 1030,-0.0001,0.0079
+2021-11-01,Video Card Description,NVIDIA GeForce GT 630,-0.0001,0.0016
+2021-11-01,Video Card Description,NVIDIA GeForce GT 710,-0.0002,0.0040
+2021-11-01,Video Card Description,NVIDIA GeForce GT 720M,-0.0001,0.0026
+2021-11-01,Video Card Description,NVIDIA GeForce GT 730,-0.0003,0.0049
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1050,-0.0009,0.0319
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1050 Ti,-0.0003,0.0573
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1060,-0.0025,0.0758
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1070,-0.0003,0.0254
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1070 Ti,-0.0002,0.0072
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1080,-0.0003,0.0150
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1080 Ti,-0.0002,0.0094
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1650,0.0014,0.0588
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1650 SUPER,-0.0003,0.0097
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1650 Ti,0.0005,0.0144
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1660,-0.0061,0.0179
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1660 SUPER,-0.0033,0.0239
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 1660 Ti,0.0005,0.0291
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 650,0.0000,0.0025
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 660,0.0001,0.0024
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 750,-0.0001,0.0028
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 750 Ti,-0.0006,0.0094
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 760,-0.0001,0.0023
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 950,-0.0001,0.0034
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 950M,0.0000,0.0031
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 960,-0.0005,0.0106
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 960M,-0.0001,0.0048
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 970,-0.0001,0.0117
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 980,-0.0001,0.0024
+2021-11-01,Video Card Description,NVIDIA GeForce GTX 980 Ti,0.0000,0.0022
+2021-11-01,Video Card Description,NVIDIA GeForce MX110,0.0000,0.0024
+2021-11-01,Video Card Description,NVIDIA GeForce MX130,-0.0001,0.0022
+2021-11-01,Video Card Description,NVIDIA GeForce MX150,0.0000,0.0038
+2021-11-01,Video Card Description,NVIDIA GeForce MX250,0.0002,0.0039
+2021-11-01,Video Card Description,NVIDIA GeForce MX330,0.0000,0.0017
+2021-11-01,Video Card Description,NVIDIA GeForce MX350,0.0001,0.0023
+2021-11-01,Video Card Description,NVIDIA GeForce MX450,0.0001,0.0019
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 2060,0.0007,0.0507
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 2060 SUPER,-0.0003,0.0121
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 2060 with Max-Q Design,0.0015,0.0015
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 2070,-0.0001,0.0150
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 2070 SUPER,0.0002,0.0203
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 2070 with Max-Q Design,0.0002,0.0029
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 2080,0.0001,0.0068
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 2080 SUPER,0.0001,0.0078
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 2080 Ti,-0.0001,0.0061
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3050,0.0013,0.0041
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3050 Laptop GPU,0.0007,0.0037
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3050 Ti,0.0017,0.0017
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3050 Ti Laptop GPU,0.0008,0.0033
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3060,0.0017,0.0126
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3060 Laptop GPU,0.0039,0.0175
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3060 Ti,0.0016,0.0095
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3070,0.0009,0.0174
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3070 Laptop GPU,0.0009,0.0046
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3070 Ti,0.0005,0.0035
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3080,0.0008,0.0108
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3080 Ti,0.0007,0.0037
+2021-11-01,Video Card Description,NVIDIA GeForce RTX 3090,0.0001,0.0044
+2021-11-01,Video Card Description,Other,-0.0023,0.1098
