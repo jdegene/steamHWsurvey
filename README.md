@@ -1,7 +1,7 @@
 # steamHWsurvey
 * Regularly updated Steam Hardware Survey Data in: **shs.csv**
 
-* Data from 2008-11-01
+* Data from 2008-11-01 - now
 
 * Also includes script to collect current months steam hardware survey data or past data from web.archive.org
 
