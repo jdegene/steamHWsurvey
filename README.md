@@ -1,5 +1,5 @@
 # steamHWsurvey
-* Regularly updated Steam Hardware Survey Data in: **shs.csv**
+* Regularly updated [Steam Hardware Survey Data](https://store.steampowered.com/hwsurvey/Steam-Hardware-Software-Survey-Welcome-to-Steam) in: **shs.csv**
 
 * Data from 2008-11-01 - now
 
