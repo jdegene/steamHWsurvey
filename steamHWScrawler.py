@@ -54,17 +54,14 @@ def get_2008(soup_all):
             abs_text = stats_line_raw[ stats_line_raw.rfind(' ')+1 : ]  
             abs_float = float(abs_text.strip('%'))/100
             
-            {'date':date_formatted,
-                                   'category':main_category_name,
-                                   'name':line_name,
-                                   'change':change_float,
-                                   'percentage':abs_float}
-            
-            page_df = page_df.append({'date':date_formatted,
-                                    'category':main_category_name,
-                                    'name':line_name,
-                                    'change':change_float,
-                                    'percentage':abs_float}, ignore_index=True)
+            page_df = pd.concat([page_df, 
+                     pd.DataFrame({'date':[date_formatted],
+                                'category':[main_category_name],
+                                'name':[line_name],
+                                'change':[change_float],
+                                'percentage':[abs_float]})
+                     ], 
+                     ignore_index=True)
     
     return page_df
 
@@ -103,18 +100,14 @@ def get_2010(soup_all):
             change_text = stats_line_change.text       
             change_float = float(change_text.strip('%'))/100
             
-            
-            {'date':date_formatted,
-                                   'category':main_category_name,
-                                   'name':line_name,
-                                   'change':change_float,
-                                   'percentage':abs_float}
-            
-            page_df = page_df.append({'date':date_formatted,
-                                    'category':main_category_name,
-                                    'name':line_name,
-                                    'change':change_float,
-                                    'percentage':abs_float}, ignore_index=True)
+            page_df = pd.concat([page_df, 
+                     pd.DataFrame({'date':[date_formatted],
+                                'category':[main_category_name],
+                                'name':[line_name],
+                                'change':[change_float],
+                                'percentage':[abs_float]})
+                     ], 
+                     ignore_index=True)
     
     return page_df
 
@@ -154,18 +147,14 @@ def get_2014(soup_all):
             change_text = stats_line_change.text       
             change_float = float(change_text.strip('%'))/100
             
-            
-            {'date':date_formatted,
-                                   'category':main_category_name,
-                                   'name':line_name,
-                                   'change':change_float,
-                                   'percentage':abs_float}
-            
-            page_df = page_df.append({'date':date_formatted,
-                                    'category':main_category_name,
-                                    'name':line_name,
-                                    'change':change_float,
-                                    'percentage':abs_float}, ignore_index=True)
+            page_df = pd.concat([page_df, 
+                                 pd.DataFrame({'date':[date_formatted],
+                                            'category':[main_category_name],
+                                            'name':[line_name],
+                                            'change':[change_float],
+                                            'percentage':[abs_float]})
+                                 ], 
+                                 ignore_index=True)
     
     return page_df
         
@@ -225,7 +214,7 @@ def build_from_scratch(out_csv_path="shs.csv"):
         
             if os.path.isfile(out_csv_path):
                 out_df = pd.read_csv(out_csv_path, encoding='utf8')
-                out_df = out_df.append(month_df, ignore_index=True)
+                out_df = pd.concat([out_df, month_df])
             else:
                 out_df = month_df.copy()
             
@@ -245,7 +234,7 @@ def update_month_from_archive(month=1, year=2020, day=15,
     
     if os.path.isfile(out_csv_path):
         out_df = pd.read_csv(out_csv_path, encoding='utf8')
-        out_df = out_df.append(month_df, ignore_index=True)
+        out_df = pd.concat([out_df, month_df])
     else:
         out_df = month_df.copy()
     
@@ -263,7 +252,7 @@ def update_month_current_steam( out_csv_path="shs.csv"):
     
     if os.path.isfile(out_csv_path):
         out_df = pd.read_csv(out_csv_path, encoding='utf8')
-        out_df = out_df.append(month_df, ignore_index=True)
+        out_df = pd.concat([out_df, month_df])
     else:
         out_df = month_df.copy()
     
