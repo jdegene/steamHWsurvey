@@ -5,6 +5,10 @@
 
 * Also includes script to collect current months steam hardware survey data or past data from web.archive.org
 
+## General Information
+
+* As mentioned by [luxzg](https://github.com/jdegene/steamHWsurvey/issues/1): some video card names have stuff like "(R)" or "Series" added to the names, and thus could introduce duplicates to the data
+
 ## General Information posted on the Steam Hardware Survey Site
 
 STEAM HARDWARE SURVEY FIX – 5/2/2018
