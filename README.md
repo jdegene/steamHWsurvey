@@ -9,6 +9,8 @@
 
 * As mentioned by [luxzg](https://github.com/jdegene/steamHWsurvey/issues/1): some video card names have stuff like "(R)" or "Series" added to the names, and thus could introduce duplicates to the data
 
+* After an initial release of December 2022 hardware data that showed [some odd discrepancies](https://archive.is/XyyNP), Steam reuploaded a revised dataset. The current shs.csv uses the revised data (original data can be found in first commit for December 2022 data)
+
 ## General Information posted on the Steam Hardware Survey Site
 
 STEAM HARDWARE SURVEY FIX – 5/2/2018
