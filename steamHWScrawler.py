@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import os
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
-import pendulum
 import time
 
-# Dates in output file are dates of measurments (steam shows November values in December)
+import pendulum
+import requests
+import pandas as pd
+from bs4 import BeautifulSoup
+
+# Dates in output file are dates of measurements (Steam shows November values in December)
 # Dates in queries and functions (eq current month december to fetch november dates)
 
 
@@ -47,10 +48,10 @@ def get_2008(soup_all):
             stats_line = single_line.find_next("div", {"class": "stats_col_right row_details"})
             stats_line_raw = stats_line.text.strip()
 
-            change_text = stats_line_raw[stats_line_raw.find("(") + 1 : stats_line_raw.find(")")]
+            change_text = stats_line_raw[stats_line_raw.find("(") + 1: stats_line_raw.find(")")]
             change_float = float(change_text.strip("%")) / 100
 
-            abs_text = stats_line_raw[stats_line_raw.rfind(" ") + 1 :]
+            abs_text = stats_line_raw[stats_line_raw.rfind(" ") + 1:]
             abs_float = float(abs_text.strip("%")) / 100
 
             page_df = pd.concat(
@@ -191,11 +192,11 @@ def get_archive_soup_year_month(month=1, year=2020, day=15):
 
     try:
         soup = get_soup(url)
-    except:
+    except (Exception, ):
         time.sleep(30)
         try:
             soup = get_soup(url)
-        except:
+        except (Exception, ):
             print(f"{month} and {year} site loading failed")
             return None
 
@@ -206,7 +207,7 @@ def get_archive_soup_year_month(month=1, year=2020, day=15):
             if (month_df is None) or len(month_df) < 1:
                 raise ValueError("Cannot be empty")
             break
-        except:
+        except (Exception, ):
             pass
 
     if month_df is not None:
@@ -222,13 +223,12 @@ def build_from_scratch(out_csv_path="shs.csv"):
     try:
         out_df = pd.read_csv(out_csv_path, encoding="utf8")
         start_year = pd.to_datetime(out_df["date"], errors="coerce").max().year
-    except:
-        out_df = None
+    except (Exception, ):
         start_year = 2008
 
     for year in range(start_year, pendulum.now().year + 1):
         for month in range(1, 13):
-            if (year == 2008) & (month < 12):
+            if (year == 2008) and (month != 12):
                 continue
 
             month_df = get_archive_soup_year_month(month=month, year=year)
@@ -262,7 +262,7 @@ def update_month_from_archive(month=1, year=2020, day=15, out_csv_path="shs.csv"
 
 
 def update_month_current_steam(out_csv_path="shs.csv"):
-    """Reads current steam HW site"""
+    """Reads current Steam HW site"""
 
     soup = get_soup("https://store.steampowered.com/hwsurvey")
     month_df = get_2014(soup)
