@@ -292,7 +292,7 @@ def update_month_current_platform_steam(out_csv_path="shs_platform.csv"):
         else:
             out_df = month_df.copy()
 
-        out_df = out_df.drop_duplicates(subset=["date", "category", "name"])
+        out_df = out_df.drop_duplicates(subset=["date", "platform", "category", "name"])
         out_df.sort_values(["date", "platform", "category", "name"], inplace=True)
         out_df.to_csv(out_csv_path, encoding="utf8", index=False, float_format="%.4f")
 
