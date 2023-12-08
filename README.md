@@ -13,7 +13,7 @@
 
 * The data was available by platform before this date, but the collection process was only started later
 
-## General Information
+# General Information
 
 * As mentioned by [luxzg](https://github.com/jdegene/steamHWsurvey/issues/1): some video card names have stuff like "(R)" or "Series" added to the names, and thus could introduce duplicates to the data
 
@@ -23,7 +23,7 @@
 
 * As mentioned by [likudo](https://github.com/jdegene/steamHWsurvey/issues/4) the raw data omits the category "others". Creating a category sum can as such create misleading results.
 
-## Official Information posted on the Steam Hardware Survey Site
+# Official Information posted on the Steam Hardware Survey Site
 
 STEAM HARDWARE SURVEY FIX – 5/2/2018
 
