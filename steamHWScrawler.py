@@ -48,10 +48,10 @@ def get_2008(soup_all):
             stats_line = single_line.find_next("div", {"class": "stats_col_right row_details"})
             stats_line_raw = stats_line.text.strip()
 
-            change_text = stats_line_raw[stats_line_raw.find("(") + 1: stats_line_raw.find(")")]
+            change_text = stats_line_raw[stats_line_raw.find("(") + 1 : stats_line_raw.find(")")]
             change_float = float(change_text.strip("%")) / 100
 
-            abs_text = stats_line_raw[stats_line_raw.rfind(" ") + 1:]
+            abs_text = stats_line_raw[stats_line_raw.rfind(" ") + 1 :]
             abs_float = float(abs_text.strip("%")) / 100
 
             page_df = pd.concat(
@@ -192,11 +192,11 @@ def get_archive_soup_year_month(month=1, year=2020, day=15):
 
     try:
         soup = get_soup(url)
-    except (Exception, ):
+    except (Exception,):
         time.sleep(30)
         try:
             soup = get_soup(url)
-        except (Exception, ):
+        except (Exception,):
             print(f"{month} and {year} site loading failed")
             return None
 
@@ -207,7 +207,7 @@ def get_archive_soup_year_month(month=1, year=2020, day=15):
             if (month_df is None) or len(month_df) < 1:
                 raise ValueError("Cannot be empty")
             break
-        except (Exception, ):
+        except (Exception,):
             pass
 
     if month_df is not None:
@@ -223,7 +223,7 @@ def build_from_scratch(out_csv_path="shs.csv"):
     try:
         out_df = pd.read_csv(out_csv_path, encoding="utf8")
         start_year = pd.to_datetime(out_df["date"], errors="coerce").max().year
-    except (Exception, ):
+    except (Exception,):
         start_year = 2008
 
     for year in range(start_year, pendulum.now().year + 1):
@@ -276,3 +276,22 @@ def update_month_current_steam(out_csv_path="shs.csv"):
     out_df = out_df.drop_duplicates(subset=["date", "category", "name"])
     out_df.sort_values(["date", "category", "name"], inplace=True)
     out_df.to_csv(out_csv_path, encoding="utf8", index=False, float_format="%.4f")
+
+
+def update_month_current_platform_steam(out_csv_path="shs_platform.csv"):
+    """Reads current Steam HW site by platform"""
+
+    for platform in ["pc", "mac", "linux"]:
+        soup = get_soup(f"https://store.steampowered.com/hwsurvey?platform={platform}")
+        month_df = get_2014(soup)
+        month_df.insert(1, "platform", platform)
+
+        if os.path.isfile(out_csv_path):
+            out_df = pd.read_csv(out_csv_path, encoding="utf8")
+            out_df = pd.concat([out_df, month_df])
+        else:
+            out_df = month_df.copy()
+
+        out_df = out_df.drop_duplicates(subset=["date", "category", "name"])
+        out_df.sort_values(["date", "category", "name"], inplace=True)
+        out_df.to_csv(out_csv_path, encoding="utf8", index=False, float_format="%.4f")
