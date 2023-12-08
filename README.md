@@ -1,9 +1,17 @@
-# steamHWsurvey
-* Regularly updated [Steam Hardware Survey Data](https://store.steampowered.com/hwsurvey/Steam-Hardware-Software-Survey-Welcome-to-Steam) in: **shs.csv**
+# shs.csv
+* Regularly updated [Steam Hardware Survey Data](https://store.steampowered.com/hwsurvey/Steam-Hardware-Software-Survey-Welcome-to-Steam)
 
 * Data from 2008-11-01 - now
 
-* Also includes script to collect current months steam hardware survey data or past data from web.archive.org
+* The Python script includes functions to collect the current months steam hardware survey data or past data from web.archive.org
+
+# shs_platform.csv
+
+* Regularly updated platform dependent [data](https://store.steampowered.com/hwsurvey?platform=pc). Fetches Linux, Mac & PC.
+
+* Data from 2023-11-01 - now
+
+* The data was available by platform before this date, but the collection process was only started later
 
 ## General Information
 
