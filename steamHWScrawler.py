@@ -185,10 +185,16 @@ def get_2014(soup_all):
     return page_df
 
 
-def get_archive_soup_year_month(month=1, year=2020, day=15):
+def get_archive_soup_year_month(month=1, year=2020, day=15, platform=None):
     str_month = str(month).rjust(2, "0")
     str_day = str(day).rjust(2, "0")
-    url = f"http://web.archive.org/web/{year}{str_month}{str_day}/http://store.steampowered.com/hwsurvey"
+    if platform is None:
+        url = f"http://web.archive.org/web/{year}{str_month}{str_day}/http://store.steampowered.com/hwsurvey"
+    else:
+        url = (
+            f"http://web.archive.org/web/{year}{str_month}{str_day}/"
+            f"http://store.steampowered.com/hwsurvey?platform={platform}"
+        )
 
     try:
         soup = get_soup(url)
@@ -259,6 +265,32 @@ def update_month_from_archive(month=1, year=2020, day=15, out_csv_path="shs.csv"
 
     out_df = out_df.drop_duplicates(subset=["date", "category", "name"])
     out_df.to_csv(out_csv_path, encoding="utf8", index=False, float_format="%.4f")
+
+
+def update_month_platform_from_archive(
+    month=1, year=2020, day=15, out_csv_path="shs_platform.csv"
+):
+    """Loads a specific month and adds to out_csv_path file"""
+
+    for platform in ["pc", "mac", "linux"]:
+        month_df = get_archive_soup_year_month(month=month, year=year, day=day, platform=platform)
+
+        # several months have no data for a platform -> skip
+        if month_df is not None:
+            month_df.insert(1, "platform", platform)
+            print(month_df)
+        else:
+            continue
+
+        if os.path.isfile(out_csv_path):
+            out_df = pd.read_csv(out_csv_path, encoding="utf8")
+            out_df = pd.concat([out_df, month_df])
+        else:
+            out_df = month_df.copy()
+
+        out_df = out_df.drop_duplicates(subset=["date", "platform", "category", "name"])
+        out_df.sort_values(["date", "platform", "category", "name"], inplace=True)
+        out_df.to_csv(out_csv_path, encoding="utf8", index=False, float_format="%.4f")
 
 
 def update_month_current_steam(out_csv_path="shs.csv"):
