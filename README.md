@@ -9,7 +9,7 @@
 
 * Regularly updated platform dependent [data](https://store.steampowered.com/hwsurvey?platform=pc). Fetches Linux, Mac & PC.
 
-* Data from 2023-11-01 - now (data before 2023-11 was collected through web.archive with some months/platform combinations missing)
+* Data from ca. 2010-06-01 - now (data before 2023-11 was collected through web.archive with some months/platform combinations missing)
 
 * The Python script includes functions to collect the current months steam hardware survey data or past data from web.archive.org
 
