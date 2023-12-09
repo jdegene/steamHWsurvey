@@ -1,7 +1,7 @@
 # shs.csv
 * Regularly updated [Steam Hardware Survey Data](https://store.steampowered.com/hwsurvey/Steam-Hardware-Software-Survey-Welcome-to-Steam)
 
-* Data from 2008-11-01 - now
+* Data from 2008-11-01 - now (data before ca. 2020 was collected through web.archive)
 
 * The Python script includes functions to collect the current months steam hardware survey data or past data from web.archive.org
 
@@ -9,9 +9,9 @@
 
 * Regularly updated platform dependent [data](https://store.steampowered.com/hwsurvey?platform=pc). Fetches Linux, Mac & PC.
 
-* Data from 2023-11-01 - now
+* Data from 2023-11-01 - now (data before 2023-11 was collected through web.archive with some months/platform combinations missing)
 
-* The data was available by platform before this date, but the collection process was only started later
+* The Python script includes functions to collect the current months steam hardware survey data or past data from web.archive.org
 
 # General Information
 
@@ -21,7 +21,7 @@
 
 * Data from March 2023 (= posted in April 2023 on the steam website) saw unusual spikes in several areas (like growth in "Language: Simplified Chinese" or "Intel CPU" share amongst others). The reason was never officially addressed (but may be due to similar reasons as pointed in official statements by steam below) nor was the data updated during the span April on the website. With the April data update in May, these outliers have seemed to be mitigated and numbers are closer to prior months.
 
-* As mentioned by [likudo](https://github.com/jdegene/steamHWsurvey/issues/4) the raw data omits the category "others". Creating a category sum can as such create misleading results.
+* As mentioned by [likudo](https://github.com/jdegene/steamHWsurvey/issues/4) the raw data omits the category "others". Creating a category sum can as such create misleading results. Refer to the platform specific data instead.
 
 # Official Information posted on the Steam Hardware Survey Site
 
