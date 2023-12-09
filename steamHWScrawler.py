@@ -272,6 +272,11 @@ def update_month_platform_from_archive(
 ):
     """Loads a specific month and adds to out_csv_path file"""
 
+    if os.path.isfile(out_csv_path):
+        out_df = pd.read_csv(out_csv_path, encoding="utf8")
+    else:
+        out_df = pd.DataFrame()
+
     for platform in ["pc", "mac", "linux"]:
         month_df = get_archive_soup_year_month(month=month, year=year, day=day, platform=platform)
 
@@ -282,15 +287,11 @@ def update_month_platform_from_archive(
         else:
             continue
 
-        if os.path.isfile(out_csv_path):
-            out_df = pd.read_csv(out_csv_path, encoding="utf8")
-            out_df = pd.concat([out_df, month_df])
-        else:
-            out_df = month_df.copy()
+        out_df = pd.concat([out_df, month_df])
 
-        out_df = out_df.drop_duplicates(subset=["date", "platform", "category", "name"])
-        out_df.sort_values(["date", "platform", "category", "name"], inplace=True)
-        out_df.to_csv(out_csv_path, encoding="utf8", index=False, float_format="%.4f")
+    out_df = out_df.drop_duplicates(subset=["date", "platform", "category", "name"])
+    out_df.sort_values(["date", "platform", "category", "name"], inplace=True)
+    out_df.to_csv(out_csv_path, encoding="utf8", index=False, float_format="%.4f")
 
 
 def update_month_current_steam(out_csv_path="shs.csv"):
@@ -313,20 +314,20 @@ def update_month_current_steam(out_csv_path="shs.csv"):
 def update_month_current_platform_steam(out_csv_path="shs_platform.csv"):
     """Reads current Steam HW site by platform"""
 
+    if os.path.isfile(out_csv_path):
+        out_df = pd.read_csv(out_csv_path, encoding="utf8")
+    else:
+        out_df = pd.DataFrame()
+
     for platform in ["pc", "mac", "linux"]:
         soup = get_soup(f"https://store.steampowered.com/hwsurvey?platform={platform}")
         month_df = get_2014(soup)
         month_df.insert(1, "platform", platform)
+        out_df = pd.concat([out_df, month_df])
 
-        if os.path.isfile(out_csv_path):
-            out_df = pd.read_csv(out_csv_path, encoding="utf8")
-            out_df = pd.concat([out_df, month_df])
-        else:
-            out_df = month_df.copy()
-
-        out_df = out_df.drop_duplicates(subset=["date", "platform", "category", "name"])
-        out_df.sort_values(["date", "platform", "category", "name"], inplace=True)
-        out_df.to_csv(out_csv_path, encoding="utf8", index=False, float_format="%.4f")
+    out_df = out_df.drop_duplicates(subset=["date", "platform", "category", "name"])
+    out_df.sort_values(["date", "platform", "category", "name"], inplace=True)
+    out_df.to_csv(out_csv_path, encoding="utf8", index=False, float_format="%.4f")
 
 
 if __name__ == "__main__":
