@@ -2,7 +2,7 @@
 
 import os
 import time
-
+import re
 import pendulum
 import requests
 import pandas as pd
@@ -29,7 +29,9 @@ def get_2008(soup_all):
 
     soup_main_stats = soup_all.find("div", {"id": "main_stats"})
     soup_main_stats_category = soup_main_stats.find_all("div", {"class": "stats_row"})
-    soup_main_stats_right_cols = soup_main_stats.find_all("div", {"class": "stats_row_details"})
+    soup_main_stats_right_cols = soup_main_stats.find_all(
+        "div", {"class": "stats_row_details"}
+    )
 
     for entry_num in range(len(soup_main_stats_category)):
         entry_main_category = soup_main_stats_category[entry_num]
@@ -48,7 +50,9 @@ def get_2008(soup_all):
             stats_line = single_line.find_next("div", {"class": "stats_col_right row_details"})
             stats_line_raw = stats_line.text.strip()
 
-            change_text = stats_line_raw[stats_line_raw.find("(") + 1 : stats_line_raw.find(")")]
+            change_text = stats_line_raw[
+                stats_line_raw.find("(") + 1 : stats_line_raw.find(")")
+            ]
             change_float = float(change_text.strip("%")) / 100
 
             abs_text = stats_line_raw[stats_line_raw.rfind(" ") + 1 :]
@@ -83,7 +87,9 @@ def get_2010(soup_all):
 
     soup_main_stats = soup_all.find("div", {"id": "main_stats"})
     soup_main_stats_category = soup_main_stats.find_all("div", {"class": "stats_row"})
-    soup_main_stats_right_cols = soup_main_stats.find_all("div", {"class": "stats_row_details"})
+    soup_main_stats_right_cols = soup_main_stats.find_all(
+        "div", {"class": "stats_row_details"}
+    )
 
     for entry_num in range(len(soup_main_stats_category)):
         entry_main_category = soup_main_stats_category[entry_num]
@@ -99,7 +105,9 @@ def get_2010(soup_all):
         for single_line in entry_main_stats_entries:
             line_name = single_line.text.strip()
 
-            stats_line_abs = single_line.find_next("div", {"class": "stats_col_right data_row"})
+            stats_line_abs = single_line.find_next(
+                "div", {"class": "stats_col_right data_row"}
+            )
             stats_line_abs_raw = stats_line_abs.text.strip()
             abs_float = float(stats_line_abs_raw.strip("%")) / 100
 
@@ -140,7 +148,9 @@ def get_2014(soup_all):
     soup_main_stats_category = soup_main_stats.find_all(
         "div", {"class": "stats_row", "onclick": True}
     )
-    soup_main_stats_right_cols = soup_main_stats.find_all("div", {"class": "stats_row_details"})
+    soup_main_stats_right_cols = soup_main_stats.find_all(
+        "div", {"class": "stats_row_details"}
+    )
 
     for entry_num in range(len(soup_main_stats_category)):
         entry_main_category = soup_main_stats_category[entry_num]
@@ -150,18 +160,20 @@ def get_2014(soup_all):
 
         entry_main_stats = soup_main_stats_right_cols[entry_num]
         entry_main_stats_entries = entry_main_stats.find_all(
-            "div", {"class": "stats_col_mid data_row"}
+            "div", {"class": re.compile(r"stats_col_mid data_row( total_row)?")}
         )
 
         for single_line in entry_main_stats_entries:
             line_name = single_line.text.strip()
 
-            stats_line_abs = single_line.find_next("div", {"class": "stats_col_right data_row"})
+            stats_line_abs = single_line.find_next(
+                "div", {"class": re.compile(r"stats_col_right data_row( total_row)?")}
+            )
             stats_line_abs_raw = stats_line_abs.text.strip()
             abs_float = float(stats_line_abs_raw.strip("%")) / 100
 
             stats_line_change = single_line.find_next(
-                "div", {"class": "stats_col_right2 data_row"}
+                "div", {"class": re.compile(r"stats_col_right2 data_row( total_row)?")}
             )
             change_text = stats_line_change.text
             change_float = float(change_text.strip("%")) / 100
@@ -278,7 +290,9 @@ def update_month_platform_from_archive(
         out_df = pd.DataFrame()
 
     for platform in ["pc", "mac", "linux"]:
-        month_df = get_archive_soup_year_month(month=month, year=year, day=day, platform=platform)
+        month_df = get_archive_soup_year_month(
+            month=month, year=year, day=day, platform=platform
+        )
 
         # several months have no data for a platform -> skip
         if month_df is not None:
