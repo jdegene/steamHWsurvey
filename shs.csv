@@ -59108,6 +59108,7 @@ date,category,name,change,percentage
 2024-09-01,VR Headsets,Riftcat Vridge,-0.0001,0.0021
 2024-09-01,VR Headsets,Sony PS VR2,0.0203,0.0239
 2024-09-01,VR Headsets,Sony PlayStation VR,0.0001,0.0006
+2024-09-01,VR Headsets,Steam users with VR Headsets,-0.0009,0.0160
 2024-09-01,VR Headsets,Valve Index HMD,0.0039,0.1565
 2024-09-01,VR Headsets,Varjo Aero,-0.0004,0.0008
 2024-09-01,VR Headsets,Windows Mixed Reality,0.0006,0.0355
@@ -59218,3 +59219,4 @@ date,category,name,change,percentage
 2024-09-01,Video Card Description,NVIDIA GeForce RTX 4090,-0.0005,0.0091
 2024-09-01,Video Card Description,NVIDIA GeForce RTX T10-8,0.0021,0.0021
 2024-09-01,Video Card Description,Other,-0.0055,0.0928
+2024-09-01,Video Card Description,,0.0002,0.0100
