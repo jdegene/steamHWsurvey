@@ -347,3 +347,6 @@ def update_month_current_platform_steam(out_csv_path="shs_platform.csv"):
 if __name__ == "__main__":
     update_month_current_steam(out_csv_path="shs.csv")
     update_month_current_platform_steam(out_csv_path="shs_platform.csv")
+
+    # create an updated readme file with current data (experimental)
+    import create_readme
