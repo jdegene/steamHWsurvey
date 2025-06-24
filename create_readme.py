@@ -142,7 +142,7 @@ for i, gpu in enumerate(gpu_list):
     legend_str = legend_str + "\color{" + colors_list[i] + "}" + gpu + " \space"
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n"
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - - - \n"
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -185,7 +185,7 @@ for i, gpu in enumerate(gpu_list):
     legend_str = legend_str + "\color{" + colors_list[i] + "}" + gpu + " \space"
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n"
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - - - \n"
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -228,7 +228,7 @@ for i, gpu in enumerate(gpu_list):
     legend_str = legend_str + "\color{" + colors_list[i] + "}" + gpu + " \space"
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n"
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - - - \n"
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -271,7 +271,7 @@ for i, gpu in enumerate(gpu_list):
     legend_str = legend_str + "\color{" + colors_list[i] + "}" + gpu + " \space"
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n"
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - - - \n"
 
 
 # %% 4 - Save to File
