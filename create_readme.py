@@ -735,7 +735,7 @@ cur_stats_txt = (
 cur_stats_txt = cur_stats_txt + '    y-axis "Ø %" \n'
 cur_stats_txt = cur_stats_txt + "    line " + str(primary_display_df["ratio"].to_list()) + "\n"
 
-legend_str = """$${\color{#51a8a6} For \space reference \space 1920*1080 \space ratio \space = \space 1.77 \space pixels \space}$$"""
+legend_str = """$${\color{#51a8a6} For \space reference \space 1920*1080 \space ratio \space = \space 16:9 \space = \space 1.77 \space}$$"""
 
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
