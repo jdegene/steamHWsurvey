@@ -2,6 +2,7 @@
 # Creates a readme file and stats/graphs from current files. Overwrites existing README.md
 
 import os
+import numpy as np
 import pandas as pd
 
 # %% 0 - Define manual first part of the readme
@@ -84,43 +85,134 @@ Graphs are auto-generated with every data update \n
 """
 )
 
-# colors_list = ["#CB7876", "#62866C", "#32769B", "#64557B", "#F67B45"]
-colors_list = ["#51a8a6", "#f9a900", "#f92800", "#d92080", "#8a52a6"]
-config_str = f"""---
-config:
-    themeVariables:
-        xyChart:
-            plotColorPalette: "{','.join(colors_list)}"
---- 
-"""
 
 # %% 3 - Add stats
 
 # ---------------------------------------------------------------------------------------------
-# 3.1 GPU stats
+# %% 3.1 GPU stats
 # ---------------------------------------------------------------------------------------------
 readme_content = readme_content + "\n## GPUs \n"
+
+# colors_list = ["#CB7876", "#62866C", "#32769B", "#64557B", "#F67B45"]
+colors_list = ["#51a8a6", "#f9a900", "#f92800", "#d92080", "#8a52a6"]
+gpu_config_str = f"""---
+config:
+    xyChart:
+        width: 700
+        height: 400
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "{','.join(colors_list)}"
+
+--- 
+"""
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.1.0 Annual Stats - Get average market share per manufacturer and year
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+annual_gpu_df = df[df["category"] == "Video Card Description"].copy()
+annual_gpu_df["type"] = "Other"
+annual_gpu_df["type"] = np.where(
+    annual_gpu_df["name"].str.lower().str.contains("nvidia"), "NVIDIA", annual_gpu_df["type"]
+)
+annual_gpu_df["type"] = np.where(
+    annual_gpu_df["name"].str.lower().str.contains("amd |ati "), "AMD", annual_gpu_df["type"]
+)
+annual_gpu_df["type"] = np.where(
+    annual_gpu_df["name"].str.lower().str.contains("intel "), "Intel", annual_gpu_df["type"]
+)
+
+# sum up percentages per day, then return average percentages per year
+annual_gpu_grp_df = annual_gpu_df.groupby(["date", "type"])["percentage"].sum().reset_index()
+annual_gpu_grp_df["year"] = annual_gpu_grp_df["date"].dt.year
+annual_gpu_grp_df = (
+    annual_gpu_grp_df.groupby(["year", "type"])["percentage"].mean().reset_index()
+)
+
+### add title and x-axis & y-axis info. Use official venfor colors
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 700
+        height: 400
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#76b900,#ED1C24,#0071C5,#808080"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Average annual marketshares by manufacturer and year"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([int(i) for i in annual_gpu_grp_df["year"].unique()])
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "Ø %" \n'
+
+manuf_list = ["NVIDIA", "AMD", "Intel", "Other"]
+for manu in manuf_list:
+    manu_stats_df = annual_gpu_grp_df[annual_gpu_grp_df["type"] == manu].copy()
+
+    manu_stats_df["percentage"] = manu_stats_df["percentage"] * 100
+    manu_stats_list = (
+        manu_stats_df["percentage"].to_list()
+        if len(manu_stats_df["percentage"].to_list()) > 0
+        else [0]
+    )
+    cur_stats_txt = cur_stats_txt + "    line " + str(manu_stats_list) + "\n"
+
+legend_str = """$${\color{#76b900}NIVIDA\space\space\space
+\color{#ED1C24}AMD\space\space\space
+\color{#0071C5}Intel\space\space\space
+\color{#808080}Other\space\space\space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## 3.1.1 NVIDIA xx90s market penetration in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+readme_content = (
+    readme_content
+    + """### NVIDIA Generation Comparison
+
+Compare GPUs across Generations, first month a GPU appears in Steam Hardware Survey = month 0.
+Combines all variants, eg. 4060, 4060 Laptop GPU, 4060 Ti are all grouped in 4060.\n
+"""
+)
+
 num_months = 36
 
 ### add title and x-axis & y-axis info
-cur_stats_txt = "```mermaid\n" + config_str + "\n"
+cur_stats_txt = "```mermaid\n" + gpu_config_str + "\n"
 cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "NVIDIA xx90 cards in months after 'first seen'. All variants."
+    title "NVIDIA xx90 cards in months after (first seen). All variants."
 """
 )
 cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
-### calculate actual line values
-gpu_list = ["2090", "3090", "4090", "5090"]
+### calculate actual line values and extract date when card was first seen
+gpu_list = ["---", "---", "3090", "4090", "5090"]
+first_seen_month_list = []
 for gpu in gpu_list:
     gpu_stats_df = (
         df[
@@ -132,6 +224,10 @@ for gpu in gpu_list:
         .sum()
         .iloc[:num_months]
     )
+    try:
+        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+    except:
+        first_seen_month_list.append("--")
     gpu_stats_df = gpu_stats_df * 100
     gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
@@ -139,10 +235,18 @@ for gpu in gpu_list:
 # Format and add legend as LATEX code to allow for coloring
 legend_str = "$${"
 for i, gpu in enumerate(gpu_list):
-    legend_str = legend_str + "\color{" + colors_list[i] + "}" + gpu + " \space"
+    legend_str = (
+        legend_str
+        + "\color{"
+        + colors_list[i]
+        + "}"
+        + gpu
+        + f"\space({first_seen_month_list[i]})"
+        + "\space\space\space"
+    )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - - - \n"
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -151,19 +255,20 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - 
 num_months = 36
 
 ### add title and x-axis & y-axis info
-cur_stats_txt = "```mermaid\n" + config_str + "\n"
+cur_stats_txt = "```mermaid\n" + gpu_config_str + "\n"
 cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "NVIDIA xx80 cards in months after 'first seen'. All variants."
+    title "NVIDIA xx80 cards in months after (first seen). All variants."
 """
 )
 cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
-### calculate actual line values
-gpu_list = ["2080", "3080", "4080", "5080"]
+### calculate actual line values and extract date when card was first seen
+gpu_list = ["1080", "2080", "3080", "4080", "5080"]
+first_seen_month_list = []
 for gpu in gpu_list:
     gpu_stats_df = (
         df[
@@ -175,6 +280,10 @@ for gpu in gpu_list:
         .sum()
         .iloc[:num_months]
     )
+    try:
+        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+    except:
+        first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
     gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
@@ -182,10 +291,18 @@ for gpu in gpu_list:
 # Format and add legend as LATEX code to allow for coloring
 legend_str = "$${"
 for i, gpu in enumerate(gpu_list):
-    legend_str = legend_str + "\color{" + colors_list[i] + "}" + gpu + " \space"
+    legend_str = (
+        legend_str
+        + "\color{"
+        + colors_list[i]
+        + "}"
+        + gpu
+        + f"\space({first_seen_month_list[i]})"
+        + "\space\space\space"
+    )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - - - \n"
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -193,20 +310,21 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
-### add title and x-axis & y-axis info
-cur_stats_txt = "```mermaid\n" + config_str + "\n"
+### calculate actual line values and extract date when card was first seen
+cur_stats_txt = "```mermaid\n" + gpu_config_str + "\n"
 cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "NVIDIA xx70 cards in months after 'first seen'. All variants."
+    title "NVIDIA xx70 cards in months after (first seen). All variants."
 """
 )
 cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 ### calculate actual line values
-gpu_list = ["2070", "3070", "4070", "5070"]
+gpu_list = ["1070", "2070", "3070", "4070", "5070"]
+first_seen_month_list = []
 for gpu in gpu_list:
     gpu_stats_df = (
         df[
@@ -218,6 +336,10 @@ for gpu in gpu_list:
         .sum()
         .iloc[:num_months]
     )
+    try:
+        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+    except:
+        first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
     gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
@@ -225,10 +347,18 @@ for gpu in gpu_list:
 # Format and add legend as LATEX code to allow for coloring
 legend_str = "$${"
 for i, gpu in enumerate(gpu_list):
-    legend_str = legend_str + "\color{" + colors_list[i] + "}" + gpu + " \space"
+    legend_str = (
+        legend_str
+        + "\color{"
+        + colors_list[i]
+        + "}"
+        + gpu
+        + f"\space({first_seen_month_list[i]})"
+        + "\space\space\space"
+    )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - - - \n"
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -237,19 +367,20 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - 
 num_months = 36
 
 ### add title and x-axis & y-axis info
-cur_stats_txt = "```mermaid\n" + config_str + "\n"
+cur_stats_txt = "```mermaid\n" + gpu_config_str + "\n"
 cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "NVIDIA xx60 cards in months after 'first seen'. All variants."
+    title "NVIDIA xx60 cards in months after (first seen). All variants."
 """
 )
 cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
-### calculate actual line values
-gpu_list = ["2060", "3060", "4060", "5060"]
+### calculate actual line values and extract date when card was first seen
+gpu_list = ["1060", "2060", "3060", "4060", "5060"]
+first_seen_month_list = []
 for gpu in gpu_list:
     gpu_stats_df = (
         df[
@@ -261,6 +392,10 @@ for gpu in gpu_list:
         .sum()
         .iloc[:num_months]
     )
+    try:
+        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+    except:
+        first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
     gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
@@ -268,10 +403,439 @@ for gpu in gpu_list:
 # Format and add legend as LATEX code to allow for coloring
 legend_str = "$${"
 for i, gpu in enumerate(gpu_list):
-    legend_str = legend_str + "\color{" + colors_list[i] + "}" + gpu + " \space"
+    legend_str = (
+        legend_str
+        + "\color{"
+        + colors_list[i]
+        + "}"
+        + gpu
+        + f"\space({first_seen_month_list[i]})"
+        + "\space\space\space"
+    )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n - - - \n"
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.1.5 AMD high-end cards in months after "first seen month". Adds all variants together
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+readme_content = (
+    readme_content
+    + """### AMD Generation Comparison
+
+Compare GPUs across Generations, first month a GPU appears in Steam Hardware Survey = month 0.
+Grouping is a bit less straight forward than with NVIDIA cards because of the naming shifts\n
+"""
+)
+
+num_months = 36
+
+### add title and x-axis & y-axis info
+cur_stats_txt = "```mermaid\n" + gpu_config_str + "\n"
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "AMD High-End cards in months after (first seen). All variants."
+"""
+)
+cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+### calculate actual line values and extract date when card was first seen
+gpu_list = ["---", "6800|6900|6950", "7900", "9090"]
+first_seen_month_list = []
+for gpu in gpu_list:
+    gpu_stats_df = (
+        df[
+            (df["category"] == "Video Card Description")
+            & (df["name"].str.contains(gpu))
+            & (df["name"].str.lower().str.contains("amd radeon rx"))
+        ]
+        .groupby("date")["percentage"]
+        .sum()
+        .iloc[:num_months]
+    )
+    try:
+        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+    except:
+        first_seen_month_list.append("---")
+    gpu_stats_df = gpu_stats_df * 100
+    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
+
+# Format and add legend as LATEX code to allow for coloring
+legend_str = "$${"
+for i, gpu in enumerate(gpu_list):
+    legend_str = (
+        legend_str
+        + "\color{"
+        + colors_list[i]
+        + "}"
+        + gpu
+        + f"\space({first_seen_month_list[i]})"
+        + "\space\space\space"
+    )
+legend_str = legend_str + "}$$"
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.1.6 AMD upper-midrange cards in months after "first seen month". Adds all variants together
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+num_months = 36
+
+### add title and x-axis & y-axis info
+cur_stats_txt = "```mermaid\n" + gpu_config_str + "\n"
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "AMD Upper-Midrange cards in months after (first seen). All variants."
+"""
+)
+cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+### calculate actual line values and extract date when card was first seen
+gpu_list = ["5700", "6700|6750", "7800", "9080"]
+first_seen_month_list = []
+for gpu in gpu_list:
+    gpu_stats_df = (
+        df[
+            (df["category"] == "Video Card Description")
+            & (df["name"].str.contains(gpu))
+            & (df["name"].str.lower().str.contains("amd radeon rx"))
+        ]
+        .groupby("date")["percentage"]
+        .sum()
+        .iloc[:num_months]
+    )
+    try:
+        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+    except:
+        first_seen_month_list.append("---")
+    gpu_stats_df = gpu_stats_df * 100
+    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
+
+# Format and add legend as LATEX code to allow for coloring
+legend_str = "$${"
+for i, gpu in enumerate(gpu_list):
+    legend_str = (
+        legend_str
+        + "\color{"
+        + colors_list[i]
+        + "}"
+        + gpu
+        + f"\space({first_seen_month_list[i]})"
+        + "\space\space\space"
+    )
+legend_str = legend_str + "}$$"
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.1.7 AMD midrange cards in months after "first seen month". Adds all variants together
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+num_months = 36
+
+### add title and x-axis & y-axis info
+cur_stats_txt = "```mermaid\n" + gpu_config_str + "\n"
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "AMD Midrange cards in months after (first seen). All variants."
+"""
+)
+cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+### calculate actual line values and extract date when card was first seen
+gpu_list = ["5600", "6600|6650", "7700", "9070"]
+first_seen_month_list = []
+for gpu in gpu_list:
+    gpu_stats_df = (
+        df[
+            (df["category"] == "Video Card Description")
+            & (df["name"].str.contains(gpu))
+            & (df["name"].str.lower().str.contains("amd radeon rx"))
+        ]
+        .groupby("date")["percentage"]
+        .sum()
+        .iloc[:num_months]
+    )
+    try:
+        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+    except:
+        first_seen_month_list.append("---")
+    gpu_stats_df = gpu_stats_df * 100
+    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
+
+# Format and add legend as LATEX code to allow for coloring
+legend_str = "$${"
+for i, gpu in enumerate(gpu_list):
+    legend_str = (
+        legend_str
+        + "\color{"
+        + colors_list[i]
+        + "}"
+        + gpu
+        + f"\space({first_seen_month_list[i]})"
+        + "\space\space\space"
+    )
+legend_str = legend_str + "}$$"
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.1.8 AMD entry-level cards in months after "first seen month". Adds all variants together
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+num_months = 36
+
+### add title and x-axis & y-axis info
+cur_stats_txt = "```mermaid\n" + gpu_config_str + "\n"
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "AMD Midrange cards in months after (first seen). All variants."
+"""
+)
+cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+### calculate actual line values and extract date when card was first seen
+gpu_list = ["5500", "6400|6500", "7600|7650", "9060"]
+first_seen_month_list = []
+for gpu in gpu_list:
+    gpu_stats_df = (
+        df[
+            (df["category"] == "Video Card Description")
+            & (df["name"].str.contains(gpu))
+            & (df["name"].str.lower().str.contains("amd radeon rx"))
+        ]
+        .groupby("date")["percentage"]
+        .sum()
+        .iloc[:num_months]
+    )
+    try:
+        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+    except:
+        first_seen_month_list.append("---")
+    gpu_stats_df = gpu_stats_df * 100
+    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
+
+# Format and add legend as LATEX code to allow for coloring
+legend_str = "$${"
+for i, gpu in enumerate(gpu_list):
+    legend_str = (
+        legend_str
+        + "\color{"
+        + colors_list[i]
+        + "}"
+        + gpu
+        + f"\space({first_seen_month_list[i]})"
+        + "\space\space\space"
+    )
+legend_str = legend_str + "}$$"
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+# ---------------------------------------------------------------------------------------------
+# %% 3.2 CPU stats
+# ---------------------------------------------------------------------------------------------
+# readme_content = readme_content + "\n## CPUs \n"
+
+
+# ---------------------------------------------------------------------------------------------
+# %% 3.3 Resolution stats
+# ---------------------------------------------------------------------------------------------
+readme_content = readme_content + "\n## Resolution \n"
+
+# get pixels on screen
+resolution_df = df[df["category"].str.contains("Resolution")].copy()
+resolution_df[["w", "h"]] = resolution_df["name"].str.split(" x ", expand=True)
+resolution_df["w"] = pd.to_numeric(resolution_df["w"], errors="coerce")
+resolution_df["h"] = pd.to_numeric(resolution_df["h"], errors="coerce")
+resolution_df.dropna(subset=["w", "h"], how="any", inplace=True)
+
+resolution_df["pixels"] = resolution_df["w"] * resolution_df["h"]
+resolution_df["pixels_weighted"] = resolution_df["pixels"] * resolution_df["percentage"]
+resolution_df["w_weighted"] = resolution_df["w"] * resolution_df["percentage"]
+resolution_df["h_weighted"] = resolution_df["h"] * resolution_df["percentage"]
+
+
+# get weighted pixel sums per month
+resolution_grp_df = (
+    resolution_df.groupby(["date", "category"])[
+        ["pixels_weighted", "w_weighted", "h_weighted"]
+    ]
+    .sum()
+    .reset_index()
+)
+resolution_grp_df["ratio"] = resolution_grp_df["w_weighted"] / resolution_grp_df["h_weighted"]
+
+resolution_grp_year_df = (
+    resolution_grp_df.groupby([resolution_grp_df["date"].dt.year, "category"])[
+        ["pixels_weighted", "ratio"]
+    ]
+    .mean()
+    .reset_index()
+)
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.3.1 Primary Display: Aspect Ratio over time
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+primary_display_df = resolution_grp_year_df[
+    resolution_grp_year_df["category"].str.contains("Primary")
+].copy()
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 700
+        height: 400
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#51a8a6"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Primary Display: aspect ratio changes (weighted by percentage)"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([int(i) for i in primary_display_df["date"].unique()])
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "Ø %" \n'
+cur_stats_txt = cur_stats_txt + "    line " + str(primary_display_df["ratio"].to_list()) + "\n"
+
+legend_str = """$${\color{#51a8a6} For \space reference \space 1920*1080 \space ratio \space = \space 1.77 \space pixels \space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.3.2 Primary Display: Pixels Shown
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+##51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+
+primary_display_df = resolution_grp_year_df[
+    resolution_grp_year_df["category"].str.contains("Primary")
+].copy()
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 700
+        height: 400
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#51a8a6"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Primary Display: number of pixels on screen (weighted by percentage)"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([int(i) for i in primary_display_df["date"].unique()])
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "Ø %" \n'
+cur_stats_txt = (
+    cur_stats_txt + "    line " + str(primary_display_df["pixels_weighted"].to_list()) + "\n"
+)
+
+legend_str = """$${\color{#51a8a6} For \space reference \space 1920*1080 \space = \space 2.073.600 \space pixels \space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.3.3 Multi Display Setup: Pixels Shown
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+##51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+
+mm_display_df = resolution_grp_year_df[
+    resolution_grp_year_df["category"].str.contains("Multi-Monitor")
+].copy()
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 700
+        height: 400
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#f9a900"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Multi-Monitor: number of pixels on screens (weighted by percentage)"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([int(i) for i in mm_display_df["date"].unique()])
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "Ø %" \n'
+cur_stats_txt = (
+    cur_stats_txt + "    line " + str(mm_display_df["pixels_weighted"].to_list()) + "\n"
+)
+
+legend_str = """$${\color{#f9a900} For \space reference \space 2x \space 1920*1080 \space = \space 4.147.200 \space pixels \space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
 
 # %% 4 - Save to File
