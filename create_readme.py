@@ -766,17 +766,24 @@ cur_stats_txt = (
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
+min_year = ratio_grp_year_df["date"].min()
+max_year = ratio_grp_year_df["date"].max()
 ratio_classes_list = ["4:3", "3:2", "16:10", "16:9", "18:9", "21:9", "Other"]
 for rc in ratio_classes_list:
     rc_stats_df = ratio_grp_year_df[ratio_grp_year_df["ratio_name"] == rc].copy()
-
     rc_stats_df["percentage"] = rc_stats_df["percentage"] * 100
-    rc_stats_list = (
-        rc_stats_df["percentage"].to_list()
-        if len(rc_stats_df["percentage"].to_list()) > 0
-        else [0]
-    )
-    cur_stats_txt = cur_stats_txt + "    line " + str(manu_stats_list) + "\n"
+
+    # ensure all years have values
+    rc_stats_list = []
+    for year in range(min_year, max_year + 1):
+        rc_year_df = rc_stats_df[rc_stats_df["date"] == year]
+        if len(rc_year_df) > 0:
+            rc_value = float(rc_year_df["percentage"].values[0])
+        else:
+            rc_value = 0
+        rc_stats_list.append(rc_value)
+
+    cur_stats_txt = cur_stats_txt + "    line " + str(rc_stats_list) + "\n"
 
 legend_str = """$${\color{#51a8a6}4:3\space\space\space
 \color{#f9a900}3:2\space\space\space
@@ -808,7 +815,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#51a8a6"
+            plotColorPalette: "#DB4105"
 
 --- 
 """
@@ -857,7 +864,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#51a8a6"
+            plotColorPalette: "#DB4105"
 
 --- 
 """
@@ -906,7 +913,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#f9a900"
+            plotColorPalette: "#DB4105"
 
 --- 
 """
