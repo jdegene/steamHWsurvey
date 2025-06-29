@@ -669,6 +669,7 @@ resolution_df["w"] = pd.to_numeric(resolution_df["w"], errors="coerce")
 resolution_df["h"] = pd.to_numeric(resolution_df["h"], errors="coerce")
 resolution_df.dropna(subset=["w", "h"], how="any", inplace=True)
 
+resolution_df["ratio"] = resolution_df["w"] / resolution_df["h"]
 resolution_df["pixels"] = resolution_df["w"] * resolution_df["h"]
 resolution_df["pixels_weighted"] = resolution_df["pixels"] * resolution_df["percentage"]
 resolution_df["w_weighted"] = resolution_df["w"] * resolution_df["percentage"]
@@ -683,19 +684,113 @@ resolution_grp_df = (
     .sum()
     .reset_index()
 )
-resolution_grp_df["ratio"] = resolution_grp_df["w_weighted"] / resolution_grp_df["h_weighted"]
+resolution_grp_df["ratio_weighted"] = (
+    resolution_grp_df["w_weighted"] / resolution_grp_df["h_weighted"]
+)
 
 resolution_grp_year_df = (
     resolution_grp_df.groupby([resolution_grp_df["date"].dt.year, "category"])[
-        ["pixels_weighted", "ratio"]
+        ["pixels_weighted", "ratio_weighted"]
     ]
     .mean()
     .reset_index()
 )
 
+# create separate df for mapping ratios to predefined ranges
+ratio_df = resolution_df.copy()
+ratio_df["ratio_name"] = "Other"
+ratio_df["ratio_name"] = np.where(
+    (ratio_df["ratio"] > 1.24) & (ratio_df["ratio"] < 1.4), "4:3", ratio_df["ratio_name"]
+)
+ratio_df["ratio_name"] = np.where(
+    (ratio_df["ratio"] > 1.49) & (ratio_df["ratio"] < 1.51), "3:2", ratio_df["ratio_name"]
+)
+ratio_df["ratio_name"] = np.where(
+    (ratio_df["ratio"] > 1.59) & (ratio_df["ratio"] < 1.7), "16:10", ratio_df["ratio_name"]
+)
+ratio_df["ratio_name"] = np.where(
+    (ratio_df["ratio"] > 1.75) & (ratio_df["ratio"] < 1.85), "16:9", ratio_df["ratio_name"]
+)
+ratio_df["ratio_name"] = np.where(
+    (ratio_df["ratio"] > 1.98) & (ratio_df["ratio"] < 2.27), "18:9", ratio_df["ratio_name"]
+)
+ratio_df["ratio_name"] = np.where(
+    (ratio_df["ratio"] > 2.3) & (ratio_df["ratio"] < 2.5), "21:9", ratio_df["ratio_name"]
+)
+
+ratio_grp_df = (
+    ratio_df[ratio_df["category"].str.contains("Primary")]
+    .groupby(["date", "ratio_name"])["percentage"]
+    .sum()
+    .reset_index()
+)
+ratio_grp_year_df = (
+    ratio_grp_df.groupby([ratio_grp_df["date"].dt.year, "ratio_name"])["percentage"]
+    .mean()
+    .reset_index()
+)
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.3.1 Primary Display: Aspect Ratio over time
+## 3.3.1 Primary Display: Preset Aspect Ratios
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 700
+        height: 400
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Primary Display: Aspect Ratio classes"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([int(i) for i in ratio_grp_year_df["date"].unique()])
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+ratio_classes_list = ["4:3", "3:2", "16:10", "16:9", "18:9", "21:9", "Other"]
+for rc in ratio_classes_list:
+    rc_stats_df = ratio_grp_year_df[ratio_grp_year_df["ratio_name"] == rc].copy()
+
+    rc_stats_df["percentage"] = rc_stats_df["percentage"] * 100
+    rc_stats_list = (
+        rc_stats_df["percentage"].to_list()
+        if len(rc_stats_df["percentage"].to_list()) > 0
+        else [0]
+    )
+    cur_stats_txt = cur_stats_txt + "    line " + str(manu_stats_list) + "\n"
+
+legend_str = """$${\color{#51a8a6}4:3\space\space\space
+\color{#f9a900}3:2\space\space\space
+\color{#f92800}16:10\space\space\space
+\color{#d92080}16:9\space\space\space
+\color{#8a52a6}18:9\space\space\space     
+\color{#46a2da}21:9\space\space\space
+\color{#808080}Other\space\space\space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.3.2 Primary Display: Aspect Ratio over time
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 primary_display_df = resolution_grp_year_df[
@@ -732,8 +827,10 @@ cur_stats_txt = (
     + str([int(i) for i in primary_display_df["date"].unique()])
     + "\n"
 )
-cur_stats_txt = cur_stats_txt + '    y-axis "Ø %" \n'
-cur_stats_txt = cur_stats_txt + "    line " + str(primary_display_df["ratio"].to_list()) + "\n"
+cur_stats_txt = cur_stats_txt + '    y-axis "ratio" \n'
+cur_stats_txt = (
+    cur_stats_txt + "    line " + str(primary_display_df["ratio_weighted"].to_list()) + "\n"
+)
 
 legend_str = """$${\color{#51a8a6} For \space reference \space 1920*1080 \space ratio \space = \space 16:9 \space = \space 1.77 \space}$$"""
 
@@ -741,7 +838,7 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.3.2 Primary Display: Pixels Shown
+## 3.3.3 Primary Display: Pixels Shown
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
@@ -779,7 +876,7 @@ cur_stats_txt = (
     + str([int(i) for i in primary_display_df["date"].unique()])
     + "\n"
 )
-cur_stats_txt = cur_stats_txt + '    y-axis "Ø %" \n'
+cur_stats_txt = cur_stats_txt + '    y-axis "pixels" \n'
 cur_stats_txt = (
     cur_stats_txt + "    line " + str(primary_display_df["pixels_weighted"].to_list()) + "\n"
 )
@@ -790,7 +887,7 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.3.3 Multi Display Setup: Pixels Shown
+## 3.3.4 Multi Display Setup: Pixels Shown
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
@@ -828,7 +925,7 @@ cur_stats_txt = (
     + str([int(i) for i in mm_display_df["date"].unique()])
     + "\n"
 )
-cur_stats_txt = cur_stats_txt + '    y-axis "Ø %" \n'
+cur_stats_txt = cur_stats_txt + '    y-axis "pixels" \n'
 cur_stats_txt = (
     cur_stats_txt + "    line " + str(mm_display_df["pixels_weighted"].to_list()) + "\n"
 )
