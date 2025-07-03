@@ -652,15 +652,101 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 # ---------------------------------------------------------------------------------------------
-# %% 3.2 CPU stats
+# %% 3.2 OS stats
 # ---------------------------------------------------------------------------------------------
-# readme_content = readme_content + "\n## CPUs \n"
+readme_content = readme_content + "\n## OS \n"
+readme_content = readme_content + """### Windows \n"""
 
+pc_df = df_platform[
+    (df_platform["platform"] == "pc") & (df_platform["category"] == "Windows Version")
+].copy()
+pc_df["Windows"] = "Other"
+
+pc_df["Windows"] = np.where(
+    pc_df["name"].str.lower().str.contains("windows 7"), "Win 7", pc_df["Windows"]
+)
+pc_df["Windows"] = np.where(
+    pc_df["name"].str.lower().str.contains("windows 8"), "Win 8", pc_df["Windows"]
+)
+pc_df["Windows"] = np.where(
+    pc_df["name"].str.lower().str.contains("windows 10"), "Win 10", pc_df["Windows"]
+)
+pc_df["Windows"] = np.where(
+    pc_df["name"].str.lower().str.contains("windows 11"), "Win 11", pc_df["Windows"]
+)
+
+
+# get only last 9 years or x-axis will not fit all labels
+pc_df = pc_df[pc_df["date"].dt.year >= (pc_df["date"].max().year - 9)]
+
+pc_grp_df = pc_df.groupby(["date", "Windows"])["percentage"].sum().reset_index()
+
+pc_grp_df["quarter"] = pc_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+pc_grp_quarter_df = (
+    pc_grp_df.groupby(["quarter", "Windows"])["percentage"].mean().reset_index()
+)
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 1400
+        height: 700
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "pc -- Windows Versions"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in pc_grp_quarter_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+
+for ops in ["Win 7", "Win 8", "Win 10", "Win 11", "Other"]:
+    os_stats_df = pc_grp_quarter_df[pc_grp_quarter_df["Windows"] == ops].copy()
+    os_stats_df["percentage"] = os_stats_df["percentage"] * 100
+
+    # ensure all years have values
+    os_stats_list = []
+    for q in pc_grp_quarter_df["quarter"].unique():
+        os_q_df = os_stats_df[os_stats_df["quarter"] == q]
+        if len(os_q_df) > 0:
+            os_value = float(os_q_df["percentage"].values[0])
+        else:
+            os_value = 0
+        os_stats_list.append(os_value)
+
+    cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
+
+legend_str = """$${\color{#51a8a6}Win 7\space\space\space
+\color{#f9a900}Win 8\space\space\space
+\color{#f92800}Win 10\space\space\space
+\color{#d92080}Win 11\space\space\space
+\color{#808080}Other\space\space\space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
 # ---------------------------------------------------------------------------------------------
 # %% 3.3 Resolution stats
 # ---------------------------------------------------------------------------------------------
-readme_content = readme_content + "\n## Resolution \n"
+readme_content = readme_content + "\n## Display Resolution \n"
 readme_content = (
     readme_content
     + """\n 
@@ -668,7 +754,7 @@ Aspect ratio classes are roughly mapped according to [wikipedia](https://en.wiki
 with:
 
 * 1.24 < **4:3** < 1.4  
-* 1.49 < **3:3** < 1.51  
+* 1.49 < **3:2** < 1.51  
 * 1.59 < **16:10** < 1.7
 * 1.75 < **16:9** < 1.85  
 * 1.98 < **18:9** < 2.27  
