@@ -655,6 +655,12 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 # %% 3.2 OS stats
 # ---------------------------------------------------------------------------------------------
 readme_content = readme_content + "\n## OS \n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.2.1 Windows
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 readme_content = readme_content + """### Windows \n"""
 
 pc_df = df_platform[
@@ -697,7 +703,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
+            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#808080"
 
 --- 
 """
@@ -742,6 +748,112 @@ legend_str = """$${\color{#51a8a6}Win 7\space\space\space
 \color{#808080}Other\space\space\space}$$"""
 
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.2.2 Linux
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+readme_content = readme_content + """### Linux \n"""
+
+linux_df = df_platform[
+    (df_platform["platform"] == "linux") & (df_platform["category"] == "Linux Version")
+].copy()
+linux_df["Linux"] = "Other"
+
+linux_df["Linux"] = np.where(
+    linux_df["name"].str.lower().str.contains("steamos"), "SteamOS", linux_df["Linux"]
+)
+linux_df["Linux"] = np.where(
+    linux_df["name"].str.lower().str.contains("arch"), "Arch", linux_df["Linux"]
+)
+linux_df["Linux"] = np.where(
+    linux_df["name"].str.lower().str.contains("mint"), "Mint", linux_df["Linux"]
+)
+linux_df["Linux"] = np.where(
+    linux_df["name"].str.lower().str.contains("ubuntu"), "Ubuntu", linux_df["Linux"]
+)
+linux_df["Linux"] = np.where(
+    linux_df["name"].str.lower().str.contains("manjaro"), "Manjaro", linux_df["Linux"]
+)
+linux_df["Linux"] = np.where(
+    linux_df["name"].str.lower().str.contains("pop!"), "Pop!_OS", linux_df["Linux"]
+)
+linux_df["Linux"] = np.where(
+    linux_df["name"].str.lower().str.contains("debian"), "Debian", linux_df["Linux"]
+)
+
+
+# get only last 9 years or x-axis will not fit all labels
+linux_df = linux_df[linux_df["date"].dt.year >= (linux_df["date"].max().year - 9)]
+
+linux_grp_df = linux_df.groupby(["date", "Linux"])["percentage"].sum().reset_index()
+
+linux_grp_df["quarter"] = linux_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+linux_grp_quarter_df = (
+    linux_grp_df.groupby(["quarter", "Linux"])["percentage"].mean().reset_index()
+)
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 1400
+        height: 700
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#32CD32,#808080"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "linux -- Linux Versions"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in linux_grp_quarter_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+
+for ops in ["SteamOS", "Arch", "Mint", "Ubuntu", "Manjaro", "Pop!_OS", "Debian", "Other"]:
+    os_stats_df = linux_grp_quarter_df[linux_grp_quarter_df["Linux"] == ops].copy()
+    os_stats_df["percentage"] = os_stats_df["percentage"] * 100
+
+    # ensure all years have values
+    os_stats_list = []
+    for q in linux_grp_quarter_df["quarter"].unique():
+        os_q_df = os_stats_df[os_stats_df["quarter"] == q]
+        if len(os_q_df) > 0:
+            os_value = float(os_q_df["percentage"].values[0])
+        else:
+            os_value = 0
+        os_stats_list.append(os_value)
+
+    cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
+
+legend_str = """$${\color{#51a8a6}SteamOS\space\space\space
+\color{#f9a900}Arch\space\space\space
+\color{#f92800}Mint\space\space\space
+\color{#d92080}Ubuntu\space\space\space
+\color{#8a52a6}Manjaro\space\space\space
+\color{#46a2da}Pop!_OS\space\space\space
+\color{#32CD32}Debian\space\space\space
+\color{#808080}Other\space\space\space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
 
 # ---------------------------------------------------------------------------------------------
 # %% 3.3 Resolution stats
