@@ -661,6 +661,20 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 # %% 3.3 Resolution stats
 # ---------------------------------------------------------------------------------------------
 readme_content = readme_content + "\n## Resolution \n"
+readme_content = (
+    readme_content
+    + """\n 
+Aspect ratio classes are roughly mapped according to [wikipedia](https://en.wikipedia.org/wiki/Display_resolution_standards) 
+with:
+
+* 1.24 < **4:3** < 1.4  
+* 1.49 < **3:3** < 1.51  
+* 1.59 < **16:10** < 1.7
+* 1.75 < **16:9** < 1.85  
+* 1.98 < **18:9** < 2.27  
+* 2.3 < **21:9** < 2.5
+"""
+)
 
 # get pixels on screen
 resolution_df = df[df["category"].str.contains("Resolution")].copy()
@@ -730,9 +744,63 @@ ratio_grp_year_df = (
     .reset_index()
 )
 
+
+# create same ratio analyises per platform
+ratio_p_df = df_platform[df_platform["category"].str.contains("Resolution")].copy()
+ratio_p_df[["w", "h"]] = ratio_p_df["name"].str.split(" x ", expand=True)
+ratio_p_df["w"] = pd.to_numeric(ratio_p_df["w"], errors="coerce")
+ratio_p_df["h"] = pd.to_numeric(ratio_p_df["h"], errors="coerce")
+ratio_p_df.dropna(subset=["w", "h"], how="any", inplace=True)
+ratio_p_df["ratio"] = ratio_p_df["w"] / ratio_p_df["h"]
+
+ratio_p_df["ratio_name"] = "Other"
+ratio_p_df["ratio_name"] = np.where(
+    (ratio_p_df["ratio"] > 1.24) & (ratio_p_df["ratio"] < 1.4), "4:3", ratio_p_df["ratio_name"]
+)
+ratio_p_df["ratio_name"] = np.where(
+    (ratio_p_df["ratio"] > 1.49) & (ratio_p_df["ratio"] < 1.51),
+    "3:2",
+    ratio_p_df["ratio_name"],
+)
+ratio_p_df["ratio_name"] = np.where(
+    (ratio_p_df["ratio"] > 1.59) & (ratio_p_df["ratio"] < 1.7),
+    "16:10",
+    ratio_p_df["ratio_name"],
+)
+ratio_p_df["ratio_name"] = np.where(
+    (ratio_p_df["ratio"] > 1.75) & (ratio_p_df["ratio"] < 1.85),
+    "16:9",
+    ratio_p_df["ratio_name"],
+)
+ratio_p_df["ratio_name"] = np.where(
+    (ratio_p_df["ratio"] > 1.98) & (ratio_p_df["ratio"] < 2.27),
+    "18:9",
+    ratio_p_df["ratio_name"],
+)
+ratio_p_df["ratio_name"] = np.where(
+    (ratio_p_df["ratio"] > 2.3) & (ratio_p_df["ratio"] < 2.5), "21:9", ratio_p_df["ratio_name"]
+)
+
+
+ratio_p_grp_df = (
+    ratio_p_df[ratio_p_df["category"].str.contains("Primary")]
+    .groupby(["date", "ratio_name", "platform"])["percentage"]
+    .sum()
+    .reset_index()
+)
+ratio_p_grp_year_df = (
+    ratio_p_grp_df.groupby([ratio_p_grp_df["date"].dt.year, "ratio_name", "platform"])[
+        "percentage"
+    ]
+    .mean()
+    .reset_index()
+)
+
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## 3.3.1 Primary Display: Preset Aspect Ratios
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+readme_content = readme_content + """### All platforms\n"""
 
 ### add title and x-axis & y-axis info
 cur_stats_txt = (
@@ -825,7 +893,7 @@ cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "Primary Display: aspect ratio changes (weighted by percentage)"
+    title "Primary Display: average aspect ratio (weighted by percentage)"
 """
 )
 cur_stats_txt = (
@@ -839,7 +907,7 @@ cur_stats_txt = (
     cur_stats_txt + "    line " + str(primary_display_df["ratio_weighted"].to_list()) + "\n"
 )
 
-legend_str = """$${\color{#51a8a6} For \space reference \space 1920*1080 \space ratio \space = \space 16:9 \space = \space 1.77 \space}$$"""
+legend_str = """$${\color{#DB4105} For \space reference \space 1920*1080 \space ratio \space = \space 16:9 \space = \space 1.77 \space}$$"""
 
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
@@ -888,7 +956,7 @@ cur_stats_txt = (
     cur_stats_txt + "    line " + str(primary_display_df["pixels_weighted"].to_list()) + "\n"
 )
 
-legend_str = """$${\color{#51a8a6} For \space reference \space 1920*1080 \space = \space 2.073.600 \space pixels \space}$$"""
+legend_str = """$${\color{#DB4105} For \space reference \space 1920*1080 \space = \space 2.073.600 \space pixels \space}$$"""
 
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
@@ -937,9 +1005,85 @@ cur_stats_txt = (
     cur_stats_txt + "    line " + str(mm_display_df["pixels_weighted"].to_list()) + "\n"
 )
 
-legend_str = """$${\color{#f9a900} For \space reference \space 2x \space 1920*1080 \space = \space 4.147.200 \space pixels \space}$$"""
+legend_str = """$${\color{#DB4105} For \space reference \space 2x \space 1920*1080 \space = \space 4.147.200 \space pixels \space}$$"""
 
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.3.5 Per Platform: Primary Display: Preset Aspect Ratios
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+readme_content = readme_content + """### Single platforms\n"""
+
+for platform in ["pc", "mac", "linux"]:
+
+    platform_ratio_p_grp_year_df = ratio_p_grp_year_df[
+        ratio_p_grp_year_df["platform"] == platform
+    ]
+
+    ### add title and x-axis & y-axis info
+    cur_stats_txt = (
+        "```mermaid\n"
+        + """---
+config:
+    xyChart:
+        width: 700
+        height: 400
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
+
+--- 
+"""
+    )
+
+    cur_stats_txt = (
+        cur_stats_txt
+        + f"""
+    xychart-beta
+        title "{platform} -- Primary Display: Aspect Ratio classes"
+    """
+    )
+    cur_stats_txt = (
+        cur_stats_txt
+        + "    x-axis "
+        + str([int(i) for i in platform_ratio_p_grp_year_df["date"].unique()])
+        + "\n"
+    )
+    cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+    min_year = platform_ratio_p_grp_year_df["date"].min()
+    max_year = platform_ratio_p_grp_year_df["date"].max()
+    ratio_classes_list = ["4:3", "3:2", "16:10", "16:9", "18:9", "21:9", "Other"]
+    for rc in ratio_classes_list:
+        rc_stats_df = platform_ratio_p_grp_year_df[
+            platform_ratio_p_grp_year_df["ratio_name"] == rc
+        ].copy()
+        rc_stats_df["percentage"] = rc_stats_df["percentage"] * 100
+
+        # ensure all years have values
+        rc_stats_list = []
+        for year in range(min_year, max_year + 1):
+            rc_year_df = rc_stats_df[rc_stats_df["date"] == year]
+            if len(rc_year_df) > 0:
+                rc_value = float(rc_year_df["percentage"].values[0])
+            else:
+                rc_value = 0
+            rc_stats_list.append(rc_value)
+
+        cur_stats_txt = cur_stats_txt + "    line " + str(rc_stats_list) + "\n"
+
+    legend_str = """$${\color{#51a8a6}4:3\space\space\space
+    \color{#f9a900}3:2\space\space\space
+    \color{#f92800}16:10\space\space\space
+    \color{#d92080}16:9\space\space\space
+    \color{#8a52a6}18:9\space\space\space     
+    \color{#46a2da}21:9\space\space\space
+    \color{#808080}Other\space\space\space}$$"""
+
+    readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
 
 # %% 4 - Save to File
