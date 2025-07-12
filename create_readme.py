@@ -732,7 +732,7 @@ for ops in ["Windows", "Linux", "MacOS", "Other"]:
         if len(os_q_df) > 0:
             os_value = float(os_q_df["percentage"].values[0])
         else:
-            os_value = 0
+            os_value = -1.12  # lowest value after converting to log10
         os_stats_list.append(os_value)
 
     cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
