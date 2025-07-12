@@ -81,7 +81,8 @@ df_platform = df_platform.sort_values("date")
 readme_content = (
     readme_content
     + """\n# Graphs \n
-Graphs are auto-generated with every data update \n
+Graphs are auto-generated with every data update. See create_readme.py for details. 
+This is raw data, expect some weirdness ;) \n
 """
 )
 
@@ -815,7 +816,7 @@ cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "linux -- Linux Versions"
+    title "linux -- Linux Distros"
 """
 )
 cur_stats_txt = (
@@ -851,6 +852,100 @@ legend_str = """$${\color{#51a8a6}SteamOS\space\space\space
 \color{#46a2da}Pop!_OS\space\space\space
 \color{#32CD32}Debian\space\space\space
 \color{#808080}Other\space\space\space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.2.3 Mac
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+readme_content = readme_content + """### Mac OSX \n"""
+
+min_version = 10
+max_version = 15
+
+mac_df = df_platform[
+    (df_platform["platform"] == "mac") & (df_platform["category"] == "OSX Version")
+].copy()
+
+mac_df["OSX"] = "Other"
+for v in range(min_version, max_version + 1):
+    mac_df["OSX"] = np.where(
+        mac_df["name"].str.lower().str.startswith(f"macos {v}"), f"{v}", mac_df["OSX"]
+    )
+
+# get only last 9 years or x-axis will not fit all labels
+mac_df = mac_df[mac_df["date"].dt.year >= (mac_df["date"].max().year - 9)]
+
+mac_grp_df = mac_df.groupby(["date", "OSX"])["percentage"].sum().reset_index()
+
+mac_grp_df["quarter"] = mac_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+mac_grp_quarter_df = mac_grp_df.groupby(["quarter", "OSX"])["percentage"].mean().reset_index()
+
+
+### add title and x-axis & y-axis info
+color_palette = ["#51a8a6", "#f9a900", "#f92800", "#d92080", "#8a52a6", "#46a2da", "#32CD32"]
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 1400
+        height: 700
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "{','.join(color_palette)}"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "OSX -- OSX Versions"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in mac_grp_quarter_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+
+for ops in [str(i) for i in range(min_version, max_version + 1)] + ["Other"]:
+    os_stats_df = mac_grp_quarter_df[mac_grp_quarter_df["OSX"] == ops].copy()
+    os_stats_df["percentage"] = os_stats_df["percentage"] * 100
+
+    # ensure all years have values
+    os_stats_list = []
+    for q in mac_grp_quarter_df["quarter"].unique():
+        os_q_df = os_stats_df[os_stats_df["quarter"] == q]
+        if len(os_q_df) > 0:
+            os_value = float(os_q_df["percentage"].values[0])
+        else:
+            os_value = 0
+        os_stats_list.append(os_value)
+
+    cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
+
+legend_str = "$${"
+for os_v in enumerate(range(min_version, max_version + 1)):
+    legend_str = (
+        legend_str
+        + "\color{"
+        + colors_list[i]
+        + "}"
+        + gpu
+        + f"\space({first_seen_month_list[i]})"
+        + "\space\space\space"
+    )
+legend_str = legend_str + "\color{#808080}Other\space\space\space}$$"
 
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
