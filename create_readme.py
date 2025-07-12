@@ -1001,7 +1001,7 @@ cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "OSX -- OSX Versions"
+    title "mac -- OSX Versions"
 """
 )
 cur_stats_txt = (
@@ -1468,6 +1468,164 @@ config:
     readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
 
-# %% 4 - Save to File
+# ---------------------------------------------------------------------------------------------
+# %% 4 VR stats
+# ---------------------------------------------------------------------------------------------
+readme_content = readme_content + "\n## VR \n"
+
+vr_df = df[df["category"] == "VR Headsets"].copy()
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 4.1 Steam users with VR Headsets
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+vr_suwVRH_df = vr_df[vr_df["name"] == "Steam users with VR Headsets"].copy()
+
+vr_suwVRH_df["quarter"] = vr_suwVRH_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+vr_suwVRH_quarter_df = (
+    vr_suwVRH_df.groupby(["quarter", "name"])["percentage"].mean().reset_index()
+)
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 700
+        height: 200
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#DB4105"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Steam users with VR Headsets (data available from 2024-09)"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in vr_suwVRH_quarter_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+cur_stats_txt = (
+    cur_stats_txt + "    line " + str(vr_suwVRH_quarter_df["percentage"].to_list()) + "\n"
+)
+
+legend_str = """$${\color{#DB4105} Steam users with VR Headsets \space\space\space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 4.2 VR Headsets
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+readme_content = readme_content + "\n### VR Headsets \n"
+readme_content = readme_content + "\n Shows the top 8 headsets of the last 2 years \n"
+
+
+vr_hs_df = vr_df[vr_df["name"] != "Steam users with VR Headsets"].copy()
+vr_hs_df["name"] = vr_hs_df["name"].replace("Pico Neo2", "Pico Neo 2")
+
+# get top 8 VR headsets from last 2 years to display in graph
+top7_list = (
+    vr_hs_df[vr_hs_df["date"].dt.year >= pd.Timestamp.now().year - 1]
+    .groupby("name")["percentage"]
+    .sum()
+    .sort_values(ascending=False)
+    .index[:8]
+)
+vr_hs_df["VR"] = vr_hs_df["name"]
+vr_hs_df["VR"] = np.where(vr_hs_df["VR"].isin(top7_list), vr_hs_df["VR"], "Other")
+
+
+# get only last 5 years or x-axis will not fit all labels
+vr_hs_df = vr_hs_df[vr_hs_df["date"].dt.year >= (vr_hs_df["date"].max().year - 5)]
+vr_hs_grp_df = vr_hs_df.groupby(["date", "VR"])["percentage"].sum().reset_index()
+
+vr_hs_grp_df["quarter"] = vr_hs_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+vr_hs_grp_quarter_df = (
+    vr_hs_grp_df.groupby(["quarter", "VR"])["percentage"].mean().reset_index()
+)
+
+
+### add title and x-axis & y-axis info
+vr_color_list = [
+    "#51a8a6",
+    "#f9a900",
+    "#f92800",
+    "#d92080",
+    "#8a52a6",
+    "#46a2da",
+    "#32CD32",
+    "#FFFFFF",
+    "#808080",
+]
+cur_stats_txt = (
+    "```mermaid\n"
+    + f"""---
+config:
+    xyChart:
+        width: 1400
+        height: 700
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "{','.join(vr_color_list)}"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "VR Headsets"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in vr_hs_grp_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+
+for vrs in sorted(list(top7_list)) + ["Other"]:
+    vr_stats_df = vr_hs_grp_df[vr_hs_grp_df["VR"] == vrs].copy()
+    vr_stats_df["percentage"] = vr_stats_df["percentage"] * 100
+
+    # ensure all years have values
+    vr_stats_list = []
+    for q in vr_hs_grp_df["quarter"].unique():
+        vr_q_df = vr_stats_df[vr_stats_df["quarter"] == q]
+        if len(vr_q_df) > 0:
+            vr_value = float(vr_q_df["percentage"].values[0])
+        else:
+            vr_value = 0
+        vr_stats_list.append(vr_value)
+
+    cur_stats_txt = cur_stats_txt + "    line " + str(vr_stats_list) + "\n"
+
+# Format and add legend as LATEX code to allow for coloring
+legend_str = "$${"
+for i, vrh in enumerate(sorted(list(top7_list)) + ["Other"]):
+    legend_str = legend_str + "\color{" + vr_color_list[i] + "}" + vrh + "\space\space\space"
+legend_str = legend_str + "}$$"
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+# %% 5 - Save to File
 with open("README.md", "w", encoding="utf-8") as f:
     f.write(readme_content)
