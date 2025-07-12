@@ -661,7 +661,7 @@ os_df = df[df["category"] == "OS Version"].copy()
 os_df["OS"] = "Other"
 
 os_df["OS"] = np.where(
-    os_df["name"].str.lower().str.contains("windows"), "Winows", os_df["OS"]
+    os_df["name"].str.lower().str.contains("windows"), "Windows", os_df["OS"]
 )
 os_df["OS"] = np.where(os_df["name"].str.lower().str.contains("macos"), "MacOS", os_df["OS"])
 
@@ -717,7 +717,7 @@ cur_stats_txt = (
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 
-for ops in ["Windows", "Linux", "Mac", "Other"]:
+for ops in ["Windows", "Linux", "MacOS", "Other"]:
     os_stats_df = os_grp_quarter_df[os_grp_quarter_df["OS"] == ops].copy()
     os_stats_df["percentage"] = os_stats_df["percentage"] * 100
 
