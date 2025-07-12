@@ -1517,7 +1517,10 @@ cur_stats_txt = (
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 cur_stats_txt = (
-    cur_stats_txt + "    line " + str(vr_suwVRH_quarter_df["percentage"].to_list()) + "\n"
+    cur_stats_txt
+    + "    line "
+    + str(vr_suwVRH_quarter_df["percentage"].multiply(100).to_list())
+    + "\n"
 )
 
 legend_str = """$${\color{#DB4105} Steam users with VR Headsets \space\space\space}$$"""

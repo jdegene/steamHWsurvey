@@ -694,7 +694,7 @@ xychart-beta
     title "Steam users with VR Headsets (data available from 2024-09)"
     x-axis [24Q3, 24Q4, 25Q1, 25Q2]
     y-axis "%" 
-    line [0.016, 0.018933333333333333, 0.016633333333333333, 0.015833333333333335]
+    line [1.6, 1.8933333333333333, 1.6633333333333333, 1.5833333333333335]
 ``` 
 $${\color{#DB4105} Steam users with VR Headsets \space\space\space}$$
 
