@@ -695,7 +695,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#00A4EF,#F4BC00,#000000,#808080"
+            plotColorPalette: "#00A4EF,#F4BC00,#FFFFFF,#808080"
 
 --- 
 """
@@ -735,7 +735,7 @@ for ops in ["Windows", "Linux", "MacOS", "Other"]:
 
 legend_str = """$${\color{#00A4EF}Windows\space\space\space
 \color{#F4BC00}Linux\space\space\space
-\color{#000000}Mac\space\space\space
+\color{#FFFFFF}Mac\space\space\space
 \color{#808080}Other\space\space\space}$$"""
 
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
