@@ -657,6 +657,89 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 # ---------------------------------------------------------------------------------------------
 readme_content = readme_content + "\n## OS \n"
 
+os_df = df[df["category"] == "OS Version"].copy()
+os_df["OS"] = "Other"
+
+os_df["OS"] = np.where(
+    os_df["name"].str.lower().str.contains("windows"), "Winows", os_df["OS"]
+)
+os_df["OS"] = np.where(os_df["name"].str.lower().str.contains("macos"), "MacOS", os_df["OS"])
+
+# get list of all linux distros from platform specific stats
+linux_v_list = [
+    i
+    for i in df_platform[
+        (df_platform["platform"] == "linux") & (df_platform["category"] == "Linux Version")
+    ]["name"].unique()
+    if i.lower() != "other"
+]
+os_df["OS"] = np.where(os_df["name"].isin(linux_v_list), "Linux", os_df["OS"])
+
+
+# get only last 9 years or x-axis will not fit all labels
+os_df = os_df[os_df["date"].dt.year >= (os_df["date"].max().year - 9)]
+
+os_grp_df = os_df.groupby(["date", "OS"])["percentage"].sum().reset_index()
+
+os_grp_df["quarter"] = os_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+os_grp_quarter_df = os_grp_df.groupby(["quarter", "OS"])["percentage"].mean().reset_index()
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 1400
+        height: 700
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#00A4EF,#F4BC00,#000000,#808080"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Platforms"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in os_grp_quarter_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+
+for ops in ["Windows", "Linux", "Mac", "Other"]:
+    os_stats_df = os_grp_quarter_df[os_grp_quarter_df["OS"] == ops].copy()
+    os_stats_df["percentage"] = os_stats_df["percentage"] * 100
+
+    # ensure all years have values
+    os_stats_list = []
+    for q in os_grp_quarter_df["quarter"].unique():
+        os_q_df = os_stats_df[os_stats_df["quarter"] == q]
+        if len(os_q_df) > 0:
+            os_value = float(os_q_df["percentage"].values[0])
+        else:
+            os_value = 0
+        os_stats_list.append(os_value)
+
+    cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
+
+legend_str = """$${\color{#00A4EF}Windows\space\space\space
+\color{#F4BC00}Linux\space\space\space
+\color{#000000}Mac\space\space\space
+\color{#808080}Other\space\space\space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## 3.2.1 Windows
