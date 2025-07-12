@@ -892,7 +892,7 @@ osx_color_palette = [
     "#d92080",
     "#8a52a6",
     "#46a2da",
-    "#32CD32",
+    "#808080",
 ]
 cur_stats_txt = (
     "```mermaid\n"

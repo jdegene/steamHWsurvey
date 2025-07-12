@@ -399,7 +399,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#32CD32"
+            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
 
 --- 
 
