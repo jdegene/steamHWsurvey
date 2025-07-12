@@ -656,6 +656,10 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 # %% 3.2 OS stats
 # ---------------------------------------------------------------------------------------------
 readme_content = readme_content + "\n## OS \n"
+readme_content = (
+    readme_content
+    + """\n For better comparison the scale is log10 scale, meaning 0 = 1%, 1 = 10%, 1.5 = 31.6%, 2 = 100% \n\n"""
+)
 
 os_df = df[df["category"] == "OS Version"].copy()
 os_df["OS"] = "Other"
@@ -714,12 +718,12 @@ cur_stats_txt = (
     + str([i for i in os_grp_quarter_df["quarter"].unique()]).replace("'", "")
     + "\n"
 )
-cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+cur_stats_txt = cur_stats_txt + '    y-axis "log10(%)" \n'
 
 
 for ops in ["Windows", "Linux", "MacOS", "Other"]:
     os_stats_df = os_grp_quarter_df[os_grp_quarter_df["OS"] == ops].copy()
-    os_stats_df["percentage"] = os_stats_df["percentage"] * 100
+    os_stats_df["percentage"] = np.log10(os_stats_df["percentage"] * 100)
 
     # ensure all years have values
     os_stats_list = []
