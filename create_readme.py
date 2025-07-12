@@ -1491,8 +1491,8 @@ cur_stats_txt = (
     + """---
 config:
     xyChart:
-        width: 700
-        height: 200
+        width: 800
+        height: 300
         
     themeVariables:
         xyChart:
@@ -1515,7 +1515,8 @@ cur_stats_txt = (
     + str([i for i in vr_suwVRH_quarter_df["quarter"].unique()]).replace("'", "")
     + "\n"
 )
-cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+y_axis_max = int((vr_suwVRH_quarter_df["percentage"].max() * 100).round() + 1)
+cur_stats_txt = cur_stats_txt + f'    y-axis "%" 1-->{y_axis_max} \n'
 cur_stats_txt = (
     cur_stats_txt
     + "    line "

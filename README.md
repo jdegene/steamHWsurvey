@@ -681,8 +681,8 @@ $${\color{#51a8a6}4:3\space\space\space
 ---
 config:
     xyChart:
-        width: 700
-        height: 200
+        width: 800
+        height: 300
         
     themeVariables:
         xyChart:
@@ -693,7 +693,7 @@ config:
 xychart-beta
     title "Steam users with VR Headsets (data available from 2024-09)"
     x-axis [24Q3, 24Q4, 25Q1, 25Q2]
-    y-axis "%" 
+    y-axis "%" 1-->3 
     line [1.6, 1.8933333333333333, 1.6633333333333333, 1.5833333333333335]
 ``` 
 $${\color{#DB4105} Steam users with VR Headsets \space\space\space}$$
