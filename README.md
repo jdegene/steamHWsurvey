@@ -399,7 +399,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "{','.join(color_palette)}"
+            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#32CD32"
 
 --- 
 
@@ -415,7 +415,7 @@ xychart-beta
     line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7.869999999999999, 45.58333333333333, 56.68333333333333, 59.66666666666667]
     line [3.38, 5.073333333333333, 8.92, 7.3, 8.61, 8.373333333333333, 8.3, 14.356666666666666, 10.673333333333336, 7.489999999999999, 8.296666666666667, 7.13, 6.3133333333333335, 5.57, 8.52, 8.709999999999999, 9.55, 6.49, 8.68, 6.905, 6.136666666666666, 6.946666666666666, 7.785, 16.12, 14.829999999999998, 14.719999999999999, 24.52, 21.085, 29.65, 30.493333333333332, 35.02, 43.205, 48.32, 45.7, 40.160000000000004, 36.11333333333333, 34.63666666666666, 32.92]
 ``` 
-$${\color{#d92080}9060\space(---)\space\space\space\color{#d92080}9060\space(---)\space\space\space\color{#d92080}9060\space(---)\space\space\space\color{#d92080}9060\space(---)\space\space\space\color{#d92080}9060\space(---)\space\space\space\color{#d92080}9060\space(---)\space\space\space\color{#808080}Other\space\space\space}$$
+$${\color{#51a8a6}10\space\space\space\color{#f9a900}11\space\space\space\color{#f92800}12\space\space\space\color{#d92080}13\space\space\space\color{#8a52a6}14\space\space\space\color{#46a2da}15\space\space\space\color{#808080}Other\space\space\space}$$
 
 <br/>
 

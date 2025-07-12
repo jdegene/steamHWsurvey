@@ -885,10 +885,18 @@ mac_grp_quarter_df = mac_grp_df.groupby(["quarter", "OSX"])["percentage"].mean()
 
 
 ### add title and x-axis & y-axis info
-color_palette = ["#51a8a6", "#f9a900", "#f92800", "#d92080", "#8a52a6", "#46a2da", "#32CD32"]
+osx_color_palette = [
+    "#51a8a6",
+    "#f9a900",
+    "#f92800",
+    "#d92080",
+    "#8a52a6",
+    "#46a2da",
+    "#32CD32",
+]
 cur_stats_txt = (
     "```mermaid\n"
-    + """---
+    + f"""---
 config:
     xyChart:
         width: 1400
@@ -896,7 +904,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "{','.join(color_palette)}"
+            plotColorPalette: "{','.join(osx_color_palette)}"
 
 --- 
 """
@@ -935,15 +943,9 @@ for ops in [str(i) for i in range(min_version, max_version + 1)] + ["Other"]:
     cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
 
 legend_str = "$${"
-for os_v in enumerate(range(min_version, max_version + 1)):
+for i, os_v in enumerate(range(min_version, max_version + 1)):
     legend_str = (
-        legend_str
-        + "\color{"
-        + colors_list[i]
-        + "}"
-        + gpu
-        + f"\space({first_seen_month_list[i]})"
-        + "\space\space\space"
+        legend_str + "\color{" + osx_color_palette[i] + "}" + str(os_v) + "\space\space\space"
     )
 legend_str = legend_str + "\color{#808080}Other\space\space\space}$$"
 
