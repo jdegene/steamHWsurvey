@@ -1533,7 +1533,9 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 ## 4.2 VR Headsets
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readme_content = readme_content + "\n### VR Headsets \n"
-readme_content = readme_content + "\n Shows the top 8 headsets of the last 2 years \n"
+readme_content = (
+    readme_content + "\n Shows the top 8 headsets calculated across the last 2 years \n"
+)
 
 
 vr_hs_df = vr_df[vr_df["name"] != "Steam users with VR Headsets"].copy()
