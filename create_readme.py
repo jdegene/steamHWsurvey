@@ -652,6 +652,113 @@ legend_str = legend_str + "}$$"
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
 
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.1.9 VRAM
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+readme_content = readme_content + """\n### VRAM \n"""
+
+vram_df = df[df["category"] == "VRAM"].copy()
+
+# create numeric column that contains GB VRAM amount
+vram_df["VRAM_GB"] = pd.to_numeric(
+    vram_df["name"].str.lower().str.replace(" mb", "").str.replace(" gb", ""), errors="coerce"
+)
+vram_df["VRAM_GB"] = np.where(
+    vram_df["name"].str.lower().str.contains(" mb"),
+    vram_df["VRAM_GB"] / 1024,
+    vram_df["VRAM_GB"],
+)
+
+# bin VRAM sizes
+vram_df["VRAM_GB_bins"] = "Others"
+vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 0, "0", vram_df["VRAM_GB_bins"])
+vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 4, "4", vram_df["VRAM_GB_bins"])
+vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 8, "8", vram_df["VRAM_GB_bins"])
+vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 12, "12", vram_df["VRAM_GB_bins"])
+vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 16, "16", vram_df["VRAM_GB_bins"])
+vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 24, "24", vram_df["VRAM_GB_bins"])
+
+# get only last 9 years or x-axis will not fit all labels
+vram_df = vram_df[vram_df["date"].dt.year >= (vram_df["date"].max().year - 9)]
+
+# get percentages and also add a cumsum column
+vram_grp_df = vram_df.groupby(["date", "VRAM_GB_bins"])["percentage"].sum().reset_index()
+
+vram_grp_df["VRAM_numeric"] = pd.to_numeric(vram_grp_df["VRAM_GB_bins"], errors="coerce")
+vram_grp_df = vram_grp_df.sort_values(["date", "VRAM_numeric"], ascending=[True, False])
+vram_grp_df["cumsum"] = vram_grp_df.groupby("date")["percentage"].cumsum()
+vram_grp_df.loc[vram_grp_df["VRAM_GB_bins"] == "Others", "cumsum"] = np.nan
+
+vram_grp_df["quarter"] = vram_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+vram_grp_quarter_df = (
+    vram_grp_df.groupby(["quarter", "VRAM_GB_bins"])[["percentage", "cumsum"]]
+    .mean()
+    .reset_index()
+)
+
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 1400
+        height: 700
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Player with at least x GB VRAM"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in vram_grp_quarter_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+
+for ops in ["4", "8", "12", "16", "24"]:
+    vram_stats_df = vram_grp_quarter_df[vram_grp_quarter_df["VRAM_GB_bins"] == ops].copy()
+    vram_stats_df["cumsum"] = vram_stats_df["cumsum"] * 100
+
+    # ensure all years have values
+    os_stats_list = []
+    last_known_value = 0
+    for q in vram_grp_quarter_df["quarter"].unique():
+        vram_q_df = vram_stats_df[vram_stats_df["quarter"] == q]
+        if len(vram_q_df) > 0:
+            vram_value = float(vram_q_df["cumsum"].values[0])
+            last_known_value = vram_value
+        else:
+            vram_value = last_known_value  # set non existing to last known value
+        os_stats_list.append(vram_value)
+
+    cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
+
+legend_str = """$${min \space VRAM \space
+\color{#51a8a6}4GB\space\space\space
+\color{#f9a900}8GB\space\space\space
+\color{#f92800}12GB\space\space\space
+\color{#d92080}16GB\space\space\space
+\color{#8a52a6}24GB\space\space\space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
 # ---------------------------------------------------------------------------------------------
 # %% 3.2 OS stats
 # ---------------------------------------------------------------------------------------------
