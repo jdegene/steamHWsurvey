@@ -719,7 +719,7 @@ cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "Player with at least x GB VRAM"
+    title "User with at least x GB VRAM"
 """
 )
 cur_stats_txt = (
@@ -749,7 +749,7 @@ for ops in ["4", "8", "12", "16", "24"]:
 
     cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
 
-legend_str = """$${min \space VRAM \space
+legend_str = """$${min \space VRAM: \space\space\space
 \color{#51a8a6}4GB\space\space\space
 \color{#f9a900}8GB\space\space\space
 \color{#f92800}12GB\space\space\space
