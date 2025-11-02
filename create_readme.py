@@ -1056,15 +1056,14 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 readme_content = readme_content + """### Mac OSX \n"""
 
-min_version = 10
-max_version = 16
+versions_list = [10, 11, 12, 13, 14, 15, 26]
 
 mac_df = df_platform[
     (df_platform["platform"] == "mac") & (df_platform["category"] == "OSX Version")
 ].copy()
 
 mac_df["OSX"] = "Other"
-for v in range(min_version, max_version + 1):
+for v in versions_list:
     mac_df["OSX"] = np.where(
         mac_df["name"].str.lower().str.startswith(f"macos {v}"), f"{v}", mac_df["OSX"]
     )
@@ -1121,7 +1120,7 @@ cur_stats_txt = (
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 
-for ops in [str(i) for i in range(min_version, max_version + 1)] + ["Other"]:
+for ops in [str(i) for i in versions_list] + ["Other"]:
     os_stats_df = mac_grp_quarter_df[mac_grp_quarter_df["OSX"] == ops].copy()
     os_stats_df["percentage"] = os_stats_df["percentage"] * 100
 
@@ -1138,7 +1137,7 @@ for ops in [str(i) for i in range(min_version, max_version + 1)] + ["Other"]:
     cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
 
 legend_str = "$${"
-for i, os_v in enumerate(range(min_version, max_version + 1)):
+for i, os_v in enumerate(versions_list):
     legend_str = (
         legend_str + "\color{" + osx_color_palette[i] + "}" + str(os_v) + "\space\space\space"
     )
