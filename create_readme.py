@@ -871,11 +871,13 @@ for ops in ["Windows"]:
 
     cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
 
+cur_stats_txt = cur_stats_txt + "``` \n"
+
 ### CREATE SECOND GRAPH FOR LINUX AND MACOS
 # add title and x-axis & y-axis info
 cur_stats_txt = (
     cur_stats_txt
-    + "``` \n\n"
+    + "\n\n"
     + (
         "```mermaid\n"
         + """---
