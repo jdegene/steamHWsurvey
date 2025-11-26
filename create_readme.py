@@ -800,6 +800,17 @@ os_df = os_df.merge(
     how="left",
 )
 os_df["corr_fac"] = 1 / os_df.groupby(["date", "OS"])["percentage_platf"].transform("sum")
+
+# Fix instances where no platform data can be matched and corr_fac calculation fails
+# by using previous month corr_fac
+os_df = os_df.sort_values(["OS", "date"])
+os_df["corr_fac"] = os_df.groupby("OS")["corr_fac"].transform(
+    lambda x: x.replace([np.inf, -np.inf], np.nan).ffill()
+)
+# If still NaN (no previous valid value exists), set to 1.0 (no correction)
+os_df["corr_fac"] = os_df["corr_fac"].fillna(1.0)
+
+
 os_df["percentage"] = os_df["percentage"] * os_df["corr_fac"]
 
 # get only last 9 years or x-axis will not fit all labels
