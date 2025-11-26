@@ -858,6 +858,7 @@ cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 for ops in ["Windows"]:
     os_stats_df = os_grp_quarter_df[os_grp_quarter_df["OS"] == ops].copy()
+    os_stats_df["percentage"] = os_stats_df["percentage"] * 100
 
     # ensure all years have values
     os_stats_list = []
@@ -913,6 +914,7 @@ cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 for ops in ["Linux", "MacOS"]:
     os_stats_df = os_grp_quarter_df[os_grp_quarter_df["OS"] == ops].copy()
+    os_stats_df["percentage"] = os_stats_df["percentage"] * 100
 
     # ensure all years have values
     os_stats_list = []
