@@ -875,7 +875,7 @@ for ops in ["Windows"]:
 # add title and x-axis & y-axis info
 cur_stats_txt = (
     cur_stats_txt
-    + "\n\n"
+    + "``` \n\n"
     + (
         "```mermaid\n"
         + """---
