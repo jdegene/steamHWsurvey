@@ -873,9 +873,12 @@ for ops in ["Windows"]:
 
 ### CREATE SECOND GRAPH FOR LINUX AND MACOS
 # add title and x-axis & y-axis info
-cur_stats_txt = cur_stats_txt + (
-    "```mermaid\n"
-    + """---
+cur_stats_txt = (
+    cur_stats_txt
+    + "\n\n"
+    + (
+        "```mermaid\n"
+        + """---
 config:
     xyChart:
         width: 1400
@@ -887,6 +890,7 @@ config:
 
 --- 
 """
+    )
 )
 
 cur_stats_txt = (
