@@ -765,12 +765,13 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 readme_content = readme_content + "\n## OS \n"
 readme_content = (
     readme_content
-    + """\n For better comparison the scale is log10 scale, meaning 0 = 1%, 1 = 10%, 1.5 = 31.6%, 2 = 100% \n\n"""
+    + """\n Numbers are reconstructed from the platform specific data and might diverge slightly form official numbers on the main SHS page \n\n"""
 )
 
 os_df = df[df["category"] == "OS Version"].copy()
 os_df["OS"] = "Other"
 
+# prep percentages as displayed on shs main page
 os_df["OS"] = np.where(
     os_df["name"].str.lower().str.contains("windows"), "Windows", os_df["OS"]
 )
@@ -787,6 +788,20 @@ linux_v_list = [
 os_df["OS"] = np.where(os_df["name"].isin(linux_v_list), "Linux", os_df["OS"])
 
 
+# add correcting factors from shs platform sites, as main page does not show all distros
+# percentages -> sum of displayed percentages is <100%
+os_correct_platform_df = df_platform[
+    df_platform["category"].isin(["Linux Version", "Windows Version", "OSX Version"])
+].rename(columns={"percentage": "percentage_platf"})
+
+os_df = os_df.merge(
+    os_correct_platform_df[["date", "name", "percentage_platf"]],
+    on=["date", "name"],
+    how="left",
+)
+os_df["corr_fac"] = 1 / os_df.groupby(["date", "OS"])["percentage_platf"].transform("sum")
+os_df["percentage"] = os_df["percentage"] * os_df["corr_fac"]
+
 # get only last 9 years or x-axis will not fit all labels
 os_df = os_df[os_df["date"].dt.year >= (os_df["date"].max().year - 9)]
 
@@ -795,18 +810,20 @@ os_grp_df = os_df.groupby(["date", "OS"])["percentage"].sum().reset_index()
 os_grp_df["quarter"] = os_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
 os_grp_quarter_df = os_grp_df.groupby(["quarter", "OS"])["percentage"].mean().reset_index()
 
-### add title and x-axis & y-axis info
+
+### CREATE ONE GRAPH FOR WINDOWS FIRST
+# add title and x-axis & y-axis info
 cur_stats_txt = (
     "```mermaid\n"
     + """---
 config:
     xyChart:
         width: 1400
-        height: 700
+        height: 350
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#00A4EF,#F4BC00,#FFFFFF,#808080"
+            plotColorPalette: "#00A4EF"
 
 --- 
 """
@@ -816,7 +833,7 @@ cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "Platforms"
+    title "Platforms: Windows"
 """
 )
 cur_stats_txt = (
@@ -825,12 +842,11 @@ cur_stats_txt = (
     + str([i for i in os_grp_quarter_df["quarter"].unique()]).replace("'", "")
     + "\n"
 )
-cur_stats_txt = cur_stats_txt + '    y-axis "log10(%)" \n'
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 
-for ops in ["Windows", "Linux", "MacOS", "Other"]:
+for ops in ["Windows"]:
     os_stats_df = os_grp_quarter_df[os_grp_quarter_df["OS"] == ops].copy()
-    os_stats_df["percentage"] = np.log10(os_stats_df["percentage"] * 100)
 
     # ensure all years have values
     os_stats_list = []
@@ -839,7 +855,56 @@ for ops in ["Windows", "Linux", "MacOS", "Other"]:
         if len(os_q_df) > 0:
             os_value = float(os_q_df["percentage"].values[0])
         else:
-            os_value = -1.12  # lowest value after converting to log10
+            os_value = 0
+        os_stats_list.append(os_value)
+
+    cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
+
+### CREATE SECOND GRAPH FOR LINUX AND MACOS
+# add title and x-axis & y-axis info
+cur_stats_txt = cur_stats_txt + (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 1400
+        height: 350
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#F4BC00,#FFFFFF"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Platforms: Linux & MacOS"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in os_grp_quarter_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+
+for ops in ["Linux", "MacOS"]:
+    os_stats_df = os_grp_quarter_df[os_grp_quarter_df["OS"] == ops].copy()
+
+    # ensure all years have values
+    os_stats_list = []
+    for q in os_grp_quarter_df["quarter"].unique():
+        os_q_df = os_stats_df[os_stats_df["quarter"] == q]
+        if len(os_q_df) > 0:
+            os_value = float(os_q_df["percentage"].values[0])
+        else:
+            os_value = 0
         os_stats_list.append(os_value)
 
     cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
@@ -847,7 +912,7 @@ for ops in ["Windows", "Linux", "MacOS", "Other"]:
 legend_str = """$${\color{#00A4EF}Windows\space\space\space
 \color{#F4BC00}Linux\space\space\space
 \color{#FFFFFF}Mac\space\space\space
-\color{#808080}Other\space\space\space}$$"""
+}$$"""
 
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
