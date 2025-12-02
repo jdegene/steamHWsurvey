@@ -2051,7 +2051,7 @@ for platform in ["pc", "linux", "mac"]:
             
         themeVariables:
             xyChart:
-                plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+                plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#CCCCCC"
 
 --- 
     """
@@ -2090,16 +2090,16 @@ for platform in ["pc", "linux", "mac"]:
 
         cur_stats_txt = cur_stats_txt + "    line " + str(ram_stats_list) + "\n"
 
-    legend_str = (
-        platform
-        + " "
-        + """$${min \space RAM: \space\space\space
+    num_quarters = len(ram_grp_quarter_df["quarter"].unique())
+    reference_line = [50] * num_quarters  # Creates [50, 50, 50, ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
+
+    legend_str = """$${min \space RAM: \space\space\space
     \color{#51a8a6}4GB\space\space\space
     \color{#f9a900}8GB\space\space\space
     \color{#f92800}16GB\space\space\space
     \color{#d92080}32GB\space\space\space
     \color{#8a52a6}64GB\space\space\space}$$"""
-    )
 
     readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
