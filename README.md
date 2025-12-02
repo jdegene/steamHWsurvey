@@ -827,6 +827,7 @@ $${min \space RAM: \space\space\space
 
 
 ### RAM by Platform 
+
 ```mermaid
 ---
     config:
@@ -838,7 +839,7 @@ $${min \space RAM: \space\space\space
             xyChart:
                 plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
-    --- 
+--- 
     
     xychart-beta
         title "pc -- Users with at least x GB System RAM"
@@ -870,7 +871,7 @@ pc $${min \space RAM: \space\space\space
             xyChart:
                 plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
-    --- 
+--- 
     
     xychart-beta
         title "linux -- Users with at least x GB System RAM"
@@ -902,7 +903,7 @@ linux $${min \space RAM: \space\space\space
             xyChart:
                 plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
-    --- 
+--- 
     
     xychart-beta
         title "mac -- Users with at least x GB System RAM"

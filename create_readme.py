@@ -1956,7 +1956,7 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 ## 5.2 Single platforms average RAM
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-readme_content = readme_content + "\n### RAM by Platform \n"
+readme_content = readme_content + "\n### RAM by Platform \n\n"
 
 # create numeric column that contains GB RAM amount
 ram_platform_df["RAM_GB"] = ram_platform_df["name"].copy()
@@ -2053,7 +2053,7 @@ for platform in ["pc", "linux", "mac"]:
             xyChart:
                 plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
-    --- 
+--- 
     """
     )
 
