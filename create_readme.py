@@ -1730,7 +1730,6 @@ readme_content = (
     readme_content + "\n Shows the top 8 headsets calculated across the last 2 years \n"
 )
 
-
 vr_hs_df = vr_df[vr_df["name"] != "Steam users with VR Headsets"].copy()
 vr_hs_df["name"] = vr_hs_df["name"].replace("Pico Neo2", "Pico Neo 2")
 
@@ -1825,6 +1824,134 @@ legend_str = legend_str + "}$$"
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
 
-# %% 5 - Save to File
+# ---------------------------------------------------------------------------------------------
+# %% 5 System RAM stats
+# ---------------------------------------------------------------------------------------------
+readme_content = readme_content + "\n## System RAM \n"
+
+ram_df = df[df["category"].str.contains("System RAM")].copy()
+ram_platform_df = df_platform[df_platform["category"].str.contains("System RAM")].copy()
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 5.1 RAM - All platforms average RAM
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# create numeric column that contains GB RAM amount
+ram_df["RAM_GB"] = ram_df["name"].copy()
+ram_df["RAM_GB"] = (
+    ram_df["RAM_GB"]
+    .str.lower()
+    .str.replace("less than ", "")
+    .str.replace("more than ", "")
+    .str.replace(" and above", "")
+    .str.replace(" and higher", "")
+)
+ram_df["RAM_GB"] = (
+    ram_df["RAM_GB"]
+    .str.replace("512 mb to 999 mb", "755")
+    .str.replace("1.5 gb to 1.99 gb", "1.75")
+    .str.replace("1 gb to 1.49 gb", "1.25")
+)
+
+ram_df["RAM_GB"] = pd.to_numeric(
+    ram_df["RAM_GB"].str.lower().str.replace(" mb", "").str.replace(" gb", ""), errors="coerce"
+)
+ram_df["RAM_GB"] = np.where(
+    ram_df["name"].str.lower().str.contains(" mb"),
+    ram_df["RAM_GB"] / 1024,
+    ram_df["RAM_GB"],
+)
+
+# bin RAM sizes
+ram_df["RAM_GB_bins"] = "Others"
+ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 0, "0", ram_df["RAM_GB_bins"])
+ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 4, "4", ram_df["RAM_GB_bins"])
+ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 8, "8", ram_df["RAM_GB_bins"])
+ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 16, "16", ram_df["RAM_GB_bins"])
+ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 32, "32", ram_df["RAM_GB_bins"])
+ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 64, "64", ram_df["RAM_GB_bins"])
+
+# get only last 9 years or x-axis will not fit all labels
+ram_df = ram_df[ram_df["date"].dt.year >= (ram_df["date"].max().year - 9)]
+
+# get percentages and also add a cumsum column
+ram_grp_df = ram_df.groupby(["date", "RAM_GB_bins"])["percentage"].sum().reset_index()
+
+ram_grp_df["RAM_numeric"] = pd.to_numeric(ram_grp_df["RAM_GB_bins"], errors="coerce")
+ram_grp_df = ram_grp_df.sort_values(["date", "RAM_numeric"], ascending=[True, False])
+ram_grp_df["cumsum"] = ram_grp_df.groupby("date")["percentage"].cumsum()
+ram_grp_df.loc[ram_grp_df["RAM_GB_bins"] == "Others", "cumsum"] = np.nan
+
+ram_grp_df["quarter"] = ram_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+ram_grp_quarter_df = (
+    ram_grp_df.groupby(["quarter", "RAM_GB_bins"])[["percentage", "cumsum"]]
+    .mean()
+    .reset_index()
+)
+
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 1400
+        height: 700
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Users with at least x GB System RAM"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in ram_grp_quarter_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+
+for ops in ["4", "8", "16", "32", "64"]:
+    ram_stats_df = ram_grp_quarter_df[ram_grp_quarter_df["RAM_GB_bins"] == ops].copy()
+    ram_stats_df["cumsum"] = ram_stats_df["cumsum"] * 100
+
+    # ensure all years have values
+    ram_stats_list = []
+    last_known_value = 0
+    for q in ram_grp_quarter_df["quarter"].unique():
+        ram_q_df = ram_stats_df[ram_stats_df["quarter"] == q]
+        if len(ram_q_df) > 0:
+            ram_value = float(ram_q_df["cumsum"].values[0])
+            last_known_value = ram_value
+        else:
+            ram_value = last_known_value  # set non existing to last known value
+        ram_stats_list.append(ram_value)
+
+    cur_stats_txt = cur_stats_txt + "    line " + str(ram_stats_list) + "\n"
+
+legend_str = """$${min \space RAM: \space\space\space
+\color{#51a8a6}4GB\space\space\space
+\color{#f9a900}8GB\space\space\space
+\color{#f92800}16GB\space\space\space
+\color{#d92080}32GB\space\space\space
+\color{#8a52a6}64GB\space\space\space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+# %% 6 - Save to File
 with open("README.md", "w", encoding="utf-8") as f:
     f.write(readme_content)
