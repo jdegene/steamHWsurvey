@@ -1902,7 +1902,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+            plotColorPalette: "#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
 --- 
 """
@@ -1923,6 +1923,10 @@ cur_stats_txt = (
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
+# first draw helper line at 50%
+num_quarters = len(ram_grp_quarter_df["quarter"].unique())
+reference_line = [50] * num_quarters  # Creates [50, 50, 50, ...]
+cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 for ops in ["4", "8", "16", "32", "64"]:
     ram_stats_df = ram_grp_quarter_df[ram_grp_quarter_df["RAM_GB_bins"] == ops].copy()
@@ -2079,22 +2083,24 @@ for platform in ["pc", "linux", "mac"]:
 
     # proceed drawing actual data
     for ops in ["4", "8", "16", "32", "64"]:
-        ram_stats_df = ram_grp_quarter_df[ram_grp_quarter_df["RAM_GB_bins"] == ops].copy()
-        ram_stats_df["cumsum"] = ram_stats_df["cumsum"] * 100
+        ram_platform_stats_df = ram_platform_grp_quarter_df[
+            ram_platform_grp_quarter_df["RAM_GB_bins"] == ops
+        ].copy()
+        ram_platform_stats_df["cumsum"] = ram_platform_stats_df["cumsum"] * 100
 
         # ensure all years have values
-        ram_stats_list = []
+        ram_platform_stats_list = []
         last_known_value = 0
-        for q in ram_grp_quarter_df["quarter"].unique():
-            ram_q_df = ram_stats_df[ram_stats_df["quarter"] == q]
-            if len(ram_q_df) > 0:
-                ram_value = float(ram_q_df["cumsum"].values[0])
-                last_known_value = ram_value
+        for q in ram_platform_grp_quarter_df["quarter"].unique():
+            ram_platform_q_df = ram_platform_stats_df[ram_platform_stats_df["quarter"] == q]
+            if len(ram_platform_q_df) > 0:
+                ram_platform_value = float(ram_platform_q_df["cumsum"].values[0])
+                last_known_value = ram_platform_value
             else:
-                ram_value = last_known_value  # set non existing to last known value
-            ram_stats_list.append(ram_value)
+                ram_platform_value = last_known_value  # set non existing to last known value
+            ram_platform_stats_list.append(ram_platform_value)
 
-        cur_stats_txt = cur_stats_txt + "    line " + str(ram_stats_list) + "\n"
+        cur_stats_txt = cur_stats_txt + "    line " + str(ram_platform_stats_list) + "\n"
 
     legend_str = """$${min \space RAM: \space\space\space
     \color{#51a8a6}4GB\space\space\space
