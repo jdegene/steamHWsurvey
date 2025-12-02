@@ -2051,7 +2051,7 @@ for platform in ["pc", "linux", "mac"]:
             
         themeVariables:
             xyChart:
-                plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#CCCCCC"
+                plotColorPalette: "#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
 --- 
     """
@@ -2072,6 +2072,12 @@ for platform in ["pc", "linux", "mac"]:
     )
     cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
+    # first draw helper line at 50%
+    num_quarters = len(ram_grp_quarter_df["quarter"].unique())
+    reference_line = [50] * num_quarters  # Creates [50, 50, 50, ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
+
+    # proceed drawing actual data
     for ops in ["4", "8", "16", "32", "64"]:
         ram_stats_df = ram_grp_quarter_df[ram_grp_quarter_df["RAM_GB_bins"] == ops].copy()
         ram_stats_df["cumsum"] = ram_stats_df["cumsum"] * 100
@@ -2089,10 +2095,6 @@ for platform in ["pc", "linux", "mac"]:
             ram_stats_list.append(ram_value)
 
         cur_stats_txt = cur_stats_txt + "    line " + str(ram_stats_list) + "\n"
-
-    num_quarters = len(ram_grp_quarter_df["quarter"].unique())
-    reference_line = [50] * num_quarters  # Creates [50, 50, 50, ...]
-    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
     legend_str = """$${min \space RAM: \space\space\space
     \color{#51a8a6}4GB\space\space\space
