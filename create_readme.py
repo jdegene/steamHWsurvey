@@ -2205,7 +2205,7 @@ cur_stats_txt = (
     + "\n"
 )
 
-legend_str = """$${\color{#DB4105} Half-Life 3 confirmed by \space\space\space}$$"""
+legend_str = """$${\color{#DB4105} HalfLife \space 3 \space confirmed \space\space\space}$$"""
 
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
