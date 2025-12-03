@@ -934,8 +934,8 @@ $${min \space RAM: \space\space\space
 ---
 config:
     xyChart:
-        width: 800
-        height: 300
+        width: 1400
+        height: 700
         
     themeVariables:
         xyChart:

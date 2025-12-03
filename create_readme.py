@@ -2171,8 +2171,8 @@ cur_stats_txt = (
     + """---
 config:
     xyChart:
-        width: 800
-        height: 300
+        width: 1400
+        height: 700
         
     themeVariables:
         xyChart:
