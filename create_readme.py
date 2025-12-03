@@ -2111,7 +2111,105 @@ for platform in ["pc", "linux", "mac"]:
 
     readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
+# %% 6 - Half-Life 3
+# Trust me Bro, I got this
 
-# %% 6 - Save to File
+readme_content = readme_content + "\n## HL3 release chances \n"
+
+# Step 1: ONLY take into account entries that contain the letters h & l !!!
+hl3_df = df[df["name"].str.contains("h") & df["name"].str.contains("l")].copy()
+
+# Step 2: Count the ratio of 3s vs. other numbers in the percentages
+hl3_df["percentage_str"] = hl3_df["percentage"].astype(str)
+
+# get only last 9 years or x-axis will not fit all labels
+hl3_df = hl3_df[hl3_df["date"].dt.year >= (vram_df["date"].max().year - 9)]
+
+
+grouped = hl3_df.groupby("date")
+dates = []
+ratios = []
+
+# Iterate through each group linearly
+for date, group in grouped:
+    # Join all percentage strings in this group into one massive string
+    all_text = "".join(group["percentage_str"])
+
+    # Count how many times #3 appears
+    count_3 = all_text.count("3")
+
+    total_digits = sum(all_text.count(str(d)) for d in range(10))
+
+    ratio = count_3 / total_digits if total_digits > 0 else 0.0
+
+    dates.append(date)
+    ratios.append(ratio)
+
+# Create the final DataFrame
+hl3_grp_df = pd.DataFrame({"date": dates, "ratio_of_3": ratios})
+
+# everbody knows, each year the liklihood of the release increases by 0.3%!
+start_year = hl3_grp_df["date"].dt.year.min()
+adjustment = (hl3_grp_df["date"].dt.year - start_year) * 0.003 * 3
+hl3_grp_df["ratio_of_3"] += adjustment
+
+
+# Step 3: Correctly adjust for Gabe Newells birthday - crucial, most people forget this!!
+is_nov = hl3_grp_df["date"].dt.month == 11
+hl3_grp_df.loc[is_nov, "ratio_of_3"] += (
+    hl3_grp_df.loc[is_nov, "date"].dt.year - 1962
+) * 0.0003
+
+# sum to quarterly averages
+hl3_grp_df["quarter"] = hl3_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+hl3_grp_quarter_df = hl3_grp_df.groupby(["quarter"])["ratio_of_3"].mean().reset_index()
+hl3_grp_quarter_df["ratio_of_3"] = hl3_grp_quarter_df["ratio_of_3"] + 0.333
+
+### competently add title and x-axis & y-axis info
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 800
+        height: 300
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#f74843"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "% Likelihood Half-Life 3 being release next month"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in hl3_grp_quarter_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+y_axis_max = int((hl3_grp_quarter_df["ratio_of_3"].max() * 100).round() + 1)
+y_axis_min = int((hl3_grp_quarter_df["ratio_of_3"].min() * 100).round() - 1)
+cur_stats_txt = cur_stats_txt + f'    y-axis "%" {y_axis_min }-->{y_axis_max} \n'
+cur_stats_txt = (
+    cur_stats_txt
+    + "    line "
+    + str(hl3_grp_quarter_df["ratio_of_3"].multiply(100).to_list())
+    + "\n"
+)
+
+legend_str = """$${\color{#DB4105} Half-Life 3 confirmed by \space\space\space}$$"""
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+
+# %% 7 - Save to File
 with open("README.md", "w", encoding="utf-8") as f:
     f.write(readme_content)
