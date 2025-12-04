@@ -802,7 +802,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
 --- 
 
@@ -840,7 +840,7 @@ $${min \space RAM: \space\space\space
             
         themeVariables:
             xyChart:
-                plotColorPalette: "#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+                plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
 --- 
     
@@ -875,7 +875,7 @@ $${min \space RAM: \space\space\space
             
         themeVariables:
             xyChart:
-                plotColorPalette: "#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+                plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
 --- 
     
@@ -910,7 +910,7 @@ $${min \space RAM: \space\space\space
             
         themeVariables:
             xyChart:
-                plotColorPalette: "#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+                plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
 --- 
     
