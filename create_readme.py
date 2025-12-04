@@ -1925,8 +1925,9 @@ cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 # first draw helper line at 50%
 num_quarters = len(ram_grp_quarter_df["quarter"].unique())
-reference_line = [50] * num_quarters  # Creates [50, 50, 50, ...]
-cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
+for l in [25, 50, 75]:
+    reference_line = [l] * num_quarters  # Creates [50, 50, 50, ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 for ops in ["4", "8", "16", "32", "64"]:
     ram_stats_df = ram_grp_quarter_df[ram_grp_quarter_df["RAM_GB_bins"] == ops].copy()
@@ -2076,10 +2077,11 @@ for platform in ["pc", "linux", "mac"]:
     )
     cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
-    # first draw helper line at 50%
+    # first draw helper line at 25,50,75%
     num_quarters = len(ram_grp_quarter_df["quarter"].unique())
-    reference_line = [50] * num_quarters  # Creates [50, 50, 50, ...]
-    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
+    for l in [25, 50, 75]:
+        reference_line = [l] * num_quarters  # Creates [50, 50, 50, ...]
+        cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
     # proceed drawing actual data
     for ops in ["4", "8", "16", "32", "64"]:
