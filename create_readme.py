@@ -1388,7 +1388,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
+            plotColorPalette: ""#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
 
 --- 
 """
@@ -1408,6 +1408,12 @@ cur_stats_txt = (
     + "\n"
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+# first draw helper lines
+num_years = len(ratio_grp_year_df["date"].unique())
+for l in [25, 50, 75]:
+    reference_line = [l] * num_years  # Creates [50, 50, 50, ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 min_year = ratio_grp_year_df["date"].min()
 max_year = ratio_grp_year_df["date"].max()
@@ -1458,7 +1464,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#DB4105"
+            plotColorPalette: "#404040,#DB4105"
 
 --- 
 """
@@ -1478,6 +1484,13 @@ cur_stats_txt = (
     + "\n"
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "ratio" \n'
+
+# first draw helper lines
+num_years = len(primary_display_df["date"].unique())
+for l in [1.77]:
+    reference_line = [l] * num_years  # Creates [1.77, 1.77, 1.77 ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
+
 cur_stats_txt = (
     cur_stats_txt + "    line " + str(primary_display_df["ratio_weighted"].to_list()) + "\n"
 )
