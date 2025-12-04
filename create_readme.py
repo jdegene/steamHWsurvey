@@ -711,7 +711,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
+            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6"
 
 --- 
 """
@@ -731,6 +731,11 @@ cur_stats_txt = (
     + "\n"
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+num_years = len(vram_grp_quarter_df["quarter"].unique())
+for l in [25, 50, 75]:
+    reference_line = [l] * num_years  # Creates [50, 50, 50, ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 
 for ops in ["4", "8", "12", "16", "24"]:
@@ -984,7 +989,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#808080"
+            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#808080"
 
 --- 
 """
@@ -1004,6 +1009,11 @@ cur_stats_txt = (
     + "\n"
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+num_years = len(pc_grp_quarter_df["quarter"].unique())
+for l in [25, 50, 75]:
+    reference_line = [l] * num_years  # Creates [50, 50, 50, ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 
 for ops in ["Win 7", "Win 8", "Win 10", "Win 11", "Other"]:
@@ -1086,7 +1096,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#32CD32,#808080"
+            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#32CD32,#808080"
 
 --- 
 """
@@ -1107,6 +1117,11 @@ cur_stats_txt = (
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
+# first draw helper lines
+num_years = len(linux_grp_quarter_df["quarter"].unique())
+for l in [25, 50, 75]:
+    reference_line = [l] * num_years  # Creates [50, 50, 50, ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 for ops in ["SteamOS", "Arch", "Mint", "Ubuntu", "Manjaro", "Pop!_OS", "Debian", "Other"]:
     os_stats_df = linux_grp_quarter_df[linux_grp_quarter_df["Linux"] == ops].copy()
@@ -1165,6 +1180,9 @@ mac_grp_quarter_df = mac_grp_df.groupby(["quarter", "OSX"])["percentage"].mean()
 
 ### add title and x-axis & y-axis info
 osx_color_palette = [
+    "#404040",  # helper line
+    "#404040",  # helper line
+    "#404040",  # helper line
     "#51a8a6",
     "#f9a900",
     "#f92800",
@@ -1204,6 +1222,12 @@ cur_stats_txt = (
     + "\n"
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+# first draw helper lines
+num_years = len(mac_grp_quarter_df["quarter"].unique())
+for l in [25, 50, 75]:
+    reference_line = [l] * num_years  # Creates [50, 50, 50, ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 
 for ops in [str(i) for i in versions_list] + ["Other"]:
@@ -1388,7 +1412,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: ""#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
+            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
 
 --- 
 """
