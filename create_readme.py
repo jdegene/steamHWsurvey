@@ -1629,6 +1629,12 @@ config:
     )
     cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
+    # first draw helper lines
+    num_years = len(platform_ratio_p_grp_year_df["date"].unique())
+    for l in [20, 50]:
+        reference_line = [l] * num_years  # Creates [50, 50, 50, ...]
+        cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
+
     min_year = platform_ratio_p_grp_year_df["date"].min()
     max_year = platform_ratio_p_grp_year_df["date"].max()
     ratio_classes_list = ["4:3", "3:2", "16:10", "16:9", "18:9", "21:9", "Other"]
@@ -1757,6 +1763,9 @@ vr_hs_grp_quarter_df = (
 
 ### add title and x-axis & y-axis info
 vr_color_list = [
+    "#404040",  # helper line
+    "#404040",  # helper line
+    "#404040",  # helper line
     "#51a8a6",
     "#f9a900",
     "#f92800",
@@ -1798,6 +1807,11 @@ cur_stats_txt = (
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
+# first draw helper lines
+num_quarters = len(vr_hs_grp_df["quarter"].unique())
+for l in [10, 25, 40]:
+    reference_line = [l] * num_quarters  # Creates [50, 50, 50, ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 for vrs in sorted(list(top7_list)) + ["Other"]:
     vr_stats_df = vr_hs_grp_df[vr_hs_grp_df["VR"] == vrs].copy()
@@ -1923,7 +1937,7 @@ cur_stats_txt = (
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
-# first draw helper line at 50%
+# first draw helper line at 25,50,75%
 num_quarters = len(ram_grp_quarter_df["quarter"].unique())
 for l in [25, 50, 75]:
     reference_line = [l] * num_quarters  # Creates [50, 50, 50, ...]
