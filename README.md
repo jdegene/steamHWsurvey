@@ -964,7 +964,7 @@ $${min \space RAM: \space\space\space
 
 ## HL3 release chances 
 
- [It's really just simple maths!](https://uploads.dailydot.com/2023/11/charlie-day-meme.jpg?q=65&auto=format&w=1200&ar=2:1&fit=crop). If you're not convinced: [link](https://www.youtube.com/watch?v=xvFZjo5PgG0). 
+ It's really just [simple](https://uploads.dailydot.com/2023/11/charlie-day-meme.jpg?q=65&auto=format&w=1200&ar=2:1&fit=crop) maths! If you're not convinced: [link](https://www.youtube.com/watch?v=xvFZjo5PgG0). 
 ```mermaid
 ---
 config:
