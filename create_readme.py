@@ -1249,7 +1249,12 @@ for ops in [str(i) for i in versions_list] + ["Other"]:
 legend_str = "$${"
 for i, os_v in enumerate(versions_list):
     legend_str = (
-        legend_str + "\color{" + osx_color_palette[i] + "}" + str(os_v) + "\space\space\space"
+        legend_str
+        + "\color{"
+        + osx_color_palette[i + 3]
+        + "}"
+        + str(os_v)
+        + "\space\space\space"
     )
 legend_str = legend_str + "\color{#808080}Other\space\space\space}$$"
 
