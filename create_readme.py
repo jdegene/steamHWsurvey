@@ -1248,6 +1248,8 @@ for ops in [str(i) for i in versions_list] + ["Other"]:
 
 legend_str = "$${"
 for i, os_v in enumerate(versions_list):
+    if i < 3:
+        continue
     legend_str = (
         legend_str + "\color{" + osx_color_palette[i] + "}" + str(os_v) + "\space\space\space"
     )
@@ -1869,6 +1871,8 @@ for vrs in sorted(list(top7_list)) + ["Other"]:
 # Format and add legend as LATEX code to allow for coloring
 legend_str = "$${"
 for i, vrh in enumerate(sorted(list(top7_list)) + ["Other"]):
+    if i < 3:
+        continue
     legend_str = legend_str + "\color{" + vr_color_list[i] + "}" + vrh + "\space\space\space"
 legend_str = legend_str + "}$$"
 

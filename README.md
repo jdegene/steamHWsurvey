@@ -515,7 +515,7 @@ xychart-beta
     line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8.610000000000001, 34.495]
     line [3.38, 5.073333333333333, 8.92, 7.3, 8.61, 8.373333333333333, 8.3, 14.356666666666666, 10.673333333333336, 7.489999999999999, 8.296666666666667, 7.13, 6.3133333333333335, 5.57, 8.52, 8.709999999999999, 9.55, 6.49, 8.68, 6.905, 6.136666666666666, 6.946666666666666, 7.785, 16.12, 14.829999999999998, 14.719999999999999, 24.52, 21.085, 29.65, 30.493333333333332, 35.02, 43.205, 48.32, 45.7, 40.160000000000004, 36.11333333333333, 34.63666666666666, 32.92, 33.513333333333335, 28.015]
 ``` 
-$${\color{#404040}10\space\space\space\color{#404040}11\space\space\space\color{#404040}12\space\space\space\color{#51a8a6}13\space\space\space\color{#f9a900}14\space\space\space\color{#f92800}15\space\space\space\color{#d92080}26\space\space\space\color{#808080}Other\space\space\space}$$
+$${\color{#51a8a6}13\space\space\space\color{#f9a900}14\space\space\space\color{#f92800}15\space\space\space\color{#d92080}26\space\space\space\color{#808080}Other\space\space\space}$$
 
 <br/>
 
@@ -812,7 +812,7 @@ xychart-beta
     line [0.1, 8.540000000000001, 7.359999999999999, 6.67, 6.38, 5.81, 5.57, 5.55, 4.99, 4.6899999999999995, 4.44, 5.3100000000000005, 5.18, 4.91, 5.55, 5.609999999999999, 4.15, 3.9899999999999998, 3.73, 3.6700000000000004, 2.8400000000000003, 2.6599999999999997, 2.7199999999999998, 2.41]
     line [0.13999999999999999, 14.87, 19.73, 19.99, 15.010000000000002, 12.07, 11.88, 11.51, 10.03, 10.040000000000001, 10.47, 8.49, 9.139999999999999, 9.719999999999999, 9.629999999999999, 10.09, 9.39, 10.85, 9.52, 12.46, 12.5, 13.350000000000001, 13.94, 13.4]
 ``` 
-$${\color{#404040}HTC Vive\space\space\space\color{#404040}Meta Quest 3\space\space\space\color{#404040}Meta Quest 3S\space\space\space\color{#51a8a6}Oculus Quest 2\space\space\space\color{#f9a900}Oculus Rift\space\space\space\color{#f92800}Oculus Rift S\space\space\space\color{#d92080}Valve Index HMD\space\space\space\color{#8a52a6}Windows Mixed Reality\space\space\space\color{#46a2da}Other\space\space\space}$$
+$${\color{#51a8a6}Oculus Quest 2\space\space\space\color{#f9a900}Oculus Rift\space\space\space\color{#f92800}Oculus Rift S\space\space\space\color{#d92080}Valve Index HMD\space\space\space\color{#8a52a6}Windows Mixed Reality\space\space\space\color{#46a2da}Other\space\space\space}$$
 
 <br/>
 
