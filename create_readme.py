@@ -2168,6 +2168,11 @@ for platform in ["pc", "linux", "mac"]:
 # Trust me Bro, I got this
 
 readme_content = readme_content + "\n## HL3 release chances \n"
+readme_content = (
+    readme_content
+    + "\n [It's really just simple maths!](https://uploads.dailydot.com/2023/11/charlie-day-meme.jpg?q=65&auto=format&w=1200&ar=2:1&fit=crop)."
+    + " If you're not convinced: [link](https://www.youtube.com/watch?v=xvFZjo5PgG0). \n"
+)
 
 # Step 1: ONLY take into account entries that contain the letters h & l !!!
 hl3_df = df[df["name"].str.contains("h") & df["name"].str.contains("l")].copy()
