@@ -1673,7 +1673,7 @@ config:
 
     # first draw helper lines
     num_years = len(platform_ratio_p_grp_year_df["date"].unique())
-    for l in [20, 50]:
+    for l in [20, 50, 80]:
         reference_line = [l] * num_years  # Creates [50, 50, 50, ...]
         cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
@@ -1720,6 +1720,7 @@ vr_df = df[df["category"] == "VR Headsets"].copy()
 ## 4.1 Steam users with VR Headsets
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 vr_suwVRH_df = vr_df[vr_df["name"] == "Steam users with VR Headsets"].copy()
+vr_suwVRH_df["short_date"] = vr_suwVRH_df["date"].dt.strftime("%y-%m")
 
 vr_suwVRH_df["quarter"] = vr_suwVRH_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
 vr_suwVRH_quarter_df = (
@@ -1753,15 +1754,16 @@ xychart-beta
 cur_stats_txt = (
     cur_stats_txt
     + "    x-axis "
-    + str([i for i in vr_suwVRH_quarter_df["quarter"].unique()]).replace("'", "")
+    + str([i for i in vr_suwVRH_df["short_date"].unique()]).replace("'", "")
     + "\n"
 )
-y_axis_max = int((vr_suwVRH_quarter_df["percentage"].max() * 100).round() + 1)
-cur_stats_txt = cur_stats_txt + f'    y-axis "%" 1-->{y_axis_max} \n'
+y_axis_max = (vr_suwVRH_df["percentage"].max() * 100) + 0.5
+y_axis_min = (vr_suwVRH_df["percentage"].min() * 100) - 0.5
+cur_stats_txt = cur_stats_txt + f'    y-axis "%" {y_axis_min}-->{y_axis_max} \n'
 cur_stats_txt = (
     cur_stats_txt
     + "    line "
-    + str(vr_suwVRH_quarter_df["percentage"].multiply(100).to_list())
+    + str(vr_suwVRH_df["percentage"].multiply(100).to_list())
     + "\n"
 )
 
