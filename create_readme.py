@@ -299,7 +299,7 @@ cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 # first draw helper lines
 num_quarters = len(nvidia_gen_quarter_df["quarter"].unique())
-for l in [25, 50]:
+for l in [15, 30]:
     reference_line = [l] * num_quarters  # Creates [50, 50, 50, ...]
     cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
