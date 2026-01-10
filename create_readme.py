@@ -304,7 +304,7 @@ for l in [25, 50]:
     cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 gen_list = [700, 800, 900, 1000, 2000, 3000, 4000, 5000]
-for gen in [str(i) for i in gen_list] + ["Other"]:
+for gen in [i for i in gen_list] + ["Other"]:
     nvidia_gen_stats_df = nvidia_gen_quarter_df[
         nvidia_gen_quarter_df["generation"] == gen
     ].copy()
