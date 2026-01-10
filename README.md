@@ -89,7 +89,46 @@ $${\color{#76b900}NIVIDA\space\space\space
 
 <br/>
 
-### NVIDIA Generation Comparison
+### NVIDIA Inter Generation Comparison
+
+Compare NVIDIA generations amongst themselves.
+Combines all variants, eg. 4060, 4070 Laptop GPU, 4090 are all grouped in 40. 
+GTX 1600 series is not included in 1000 series. 
+
+```mermaid
+---
+config:
+    xyChart:
+        width: 1400
+        height: 700
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#32CD32,#FFFFFF,#808080"
+
+--- 
+
+xychart-beta
+    title "NVIDIA Intra Generation Comparison"
+    x-axis [16Q1, 16Q2, 16Q3, 16Q4, 17Q3, 17Q4, 18Q1, 18Q2, 18Q3, 18Q4, 19Q1, 19Q2, 19Q3, 19Q4, 20Q1, 20Q2, 20Q3, 20Q4, 21Q1, 21Q2, 21Q3, 21Q4, 22Q1, 22Q2, 22Q3, 22Q4, 23Q1, 23Q2, 23Q3, 23Q4, 24Q1, 24Q2, 24Q3, 24Q4, 25Q1, 25Q2, 25Q3, 25Q4]
+    y-axis "%" 
+ line [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25]
+ line [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
+    line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    line [2.723333333333333, 2.2233333333333336, 1.9299999999999997, 1.6500000000000001, 0.8199999999999998, 0.31000000000000005, 0, 0.48, 0.5700000000000001, 0.6133333333333334, 0.67, 0.49000000000000005, 0.71, 0.7766666666666667, 1.3333333333333335, 1.6733333333333333, 1.95, 2.796666666666667, 2.833333333333333, 1.6500000000000001, 1.6833333333333336, 1.7933333333333332, 1.8233333333333335, 1.7466666666666668, 1.4766666666666666, 1.5733333333333335, 1.1266666666666667, 1.2933333333333332, 0.8833333333333334, 0.5050000000000001, 0.32666666666666666, 0.35666666666666674, 0.21, 0.4, 0.15, 0.4, 0.6166666666666667, 1.06]
+``` 
+$${\color{#51a8a6}700\space\space\space\color{#f9a900}800\space\space\space\color{#f92800}900\space\space\space\color{#d92080}1000\space\space\space\color{#8a52a6}2000\space\space\space\color{#46a2da}3000\space\space\space\color{#32CD32}4000\space\space\space\color{#FFFFFF}5000\space\space\space\color{#808080}Other\space\space\space}$$
+
+<br/>
+
+### NVIDIA Intra Generation Comparison
 
 Compare GPUs across Generations, first month a GPU appears in Steam Hardware Survey = month 0.
 Combines all variants, eg. 4060, 4060 Laptop GPU, 4060 Ti are all grouped in 4060.
@@ -206,7 +245,7 @@ $${\color{#51a8a6}1060\space(Aug \space 2016)\space\space\space\color{#f9a900}20
 
 <br/>
 
-### AMD Generation Comparison
+### AMD Intra Generation Comparison
 
 Compare GPUs across Generations, first month a GPU appears in Steam Hardware Survey = month 0.
 Grouping is a bit less straight forward than with NVIDIA cards because of the naming shifts
@@ -651,7 +690,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
+            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
 
 --- 
 
@@ -689,7 +728,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
+            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
 
 --- 
 
@@ -727,7 +766,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
+            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
 
 --- 
 

@@ -2,6 +2,7 @@
 # Creates a readme file and stats/graphs from current files. Overwrites existing README.md
 
 import os
+import re
 import numpy as np
 import pandas as pd
 
@@ -187,12 +188,161 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.1 NVIDIA xx90s market penetration in months after "first seen month". Adds all variants together
+## 3.1.1 NVIDIA combined generation shares. Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 readme_content = (
     readme_content
-    + """### NVIDIA Generation Comparison
+    + """### NVIDIA Inter Generation Comparison
+
+Compare NVIDIA generations amongst themselves.
+Combines all variants, eg. 4060, 4070 Laptop GPU, 4090 are all grouped in 40. 
+GTX 1600 series is not included in 1000 series. \n
+"""
+)
+
+nvidia_gen_df = df[
+    (df["category"] == "Video Card Description")
+    & (df["name"].str.lower().str.contains("nvidia"))
+].copy()
+
+
+# extract generation from gpu name
+def extract_gpu_generation(name):
+    """
+    Extract GPU generation from NVIDIA GeForce GPU name.
+    Returns generation number (200-5000) or 'other' for GPUs outside this range.
+    """
+    # Look for RTX or GTX/GT/GTS followed by a number
+    # Pattern captures the full model number (e.g., 1050, 780, 2080, 5090)
+    match = re.search(r"(?:RTX|GTX|GTS|GT|GeForce)\s+(\d{3,4})", name)
+
+    if match:
+        model_number = int(match.group(1))
+
+        # Determine generation based on model number
+        if model_number >= 1000:
+            # 4-digit numbers: 1050 -> 1000, 1660 -> 1600, 2080 -> 2000, etc.
+            generation = (model_number // 100) * 100
+        else:
+            # 3-digit numbers: 780 -> 700, 970 -> 900, etc.
+            generation = (model_number // 100) * 100
+
+        # Only return if generation is in valid range (200-5000)
+        if 200 <= generation <= 5000:
+            return generation
+
+    # If no valid generation found, return 'other'
+    return "Other"
+
+
+# Apply the function to create new column
+nvidia_gen_df["generation"] = nvidia_gen_df["name"].apply(extract_gpu_generation)
+nvidia_gen_grp_df = (
+    nvidia_gen_df.groupby(["date", "generation"])["percentage"].sum().reset_index()
+)
+
+# get only last 9 years or x-axis will not fit all labels
+nvidia_gen_grp_df = nvidia_gen_grp_df[
+    nvidia_gen_grp_df["date"].dt.year >= (nvidia_gen_grp_df["date"].max().year - 9)
+]
+nvidia_gen_grp_df["quarter"] = (
+    nvidia_gen_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+)
+nvidia_gen_quarter_df = (
+    nvidia_gen_grp_df.groupby(["quarter", "generation"])["percentage"].mean().reset_index()
+)
+
+nvidia_color_list = [
+    "#404040",  # helper line
+    "#404040",  # helper line
+    "#51a8a6",
+    "#f9a900",
+    "#f92800",
+    "#d92080",
+    "#8a52a6",
+    "#46a2da",
+    "#32CD32",
+    "#FFFFFF",
+    "#808080",
+]
+cur_stats_txt = (
+    "```mermaid\n"
+    + f"""---
+config:
+    xyChart:
+        width: 1400
+        height: 700
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "{','.join(nvidia_color_list)}"
+
+--- 
+"""
+)
+
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "NVIDIA Intra Generation Comparison"
+"""
+)
+cur_stats_txt = (
+    cur_stats_txt
+    + "    x-axis "
+    + str([i for i in nvidia_gen_quarter_df["quarter"].unique()]).replace("'", "")
+    + "\n"
+)
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+# first draw helper lines
+num_quarters = len(nvidia_gen_quarter_df["quarter"].unique())
+for l in [25, 50]:
+    reference_line = [l] * num_quarters  # Creates [50, 50, 50, ...]
+    cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
+
+gen_list = [700, 800, 900, 1000, 2000, 3000, 4000, 5000]
+for gen in [str(i) for i in gen_list] + ["Other"]:
+    nvidia_gen_stats_df = nvidia_gen_quarter_df[
+        nvidia_gen_quarter_df["generation"] == gen
+    ].copy()
+    nvidia_gen_stats_df["percentage"] = nvidia_gen_stats_df["percentage"] * 100
+
+    # ensure all years have values
+    nvidia_gen_stats_list = []
+    for q in nvidia_gen_quarter_df["quarter"].unique():
+        gen_q_df = nvidia_gen_stats_df[nvidia_gen_stats_df["quarter"] == q]
+        if len(gen_q_df) > 0:
+            gen_value = float(gen_q_df["percentage"].values[0])
+        else:
+            gen_value = 0
+        nvidia_gen_stats_list.append(gen_value)
+
+    cur_stats_txt = cur_stats_txt + "    line " + str(nvidia_gen_stats_list) + "\n"
+
+legend_str = "$${"
+for i, gen in enumerate(gen_list):
+    legend_str = (
+        legend_str
+        + "\color{"
+        + nvidia_color_list[i + 2]
+        + "}"
+        + str(gen)
+        + "\space\space\space"
+    )
+legend_str = legend_str + "\color{#808080}Other\space\space\space}$$"
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.1.2 NVIDIA xx90s market penetration in months after "first seen month". Adds all variants together
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+readme_content = (
+    readme_content
+    + """### NVIDIA Intra Generation Comparison
 
 Compare GPUs across Generations, first month a GPU appears in Steam Hardware Survey = month 0.
 Combines all variants, eg. 4060, 4060 Laptop GPU, 4060 Ti are all grouped in 4060.\n
@@ -253,7 +403,7 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.2 NVIDIA xx80s market penetration in months after "first seen month". Adds all variants together
+## 3.1.3 NVIDIA xx80s market penetration in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -309,7 +459,7 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.3 NVIDIA xx70s market penetration in months after "first seen month". Adds all variants together
+## 3.1.4 NVIDIA xx70s market penetration in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -365,7 +515,7 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.4 NVIDIA xx60s market penetration in months after "first seen month". Adds all variants together
+## 3.1.5 NVIDIA xx60s market penetration in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -421,12 +571,12 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.5 AMD high-end cards in months after "first seen month". Adds all variants together
+## 3.1.6 AMD high-end cards in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 readme_content = (
     readme_content
-    + """### AMD Generation Comparison
+    + """### AMD Intra Generation Comparison
 
 Compare GPUs across Generations, first month a GPU appears in Steam Hardware Survey = month 0.
 Grouping is a bit less straight forward than with NVIDIA cards because of the naming shifts\n
@@ -487,7 +637,7 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.6 AMD upper-midrange cards in months after "first seen month". Adds all variants together
+## 3.1.7 AMD upper-midrange cards in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -543,7 +693,7 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.7 AMD midrange cards in months after "first seen month". Adds all variants together
+## 3.1.8 AMD midrange cards in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -599,7 +749,7 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.8 AMD entry-level cards in months after "first seen month". Adds all variants together
+## 3.1.9 AMD entry-level cards in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -655,7 +805,7 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.9 VRAM
+## 3.1.10 VRAM
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 readme_content = readme_content + """\n### VRAM \n"""
@@ -1650,7 +1800,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
+            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#808080"
 
 --- 
 """
