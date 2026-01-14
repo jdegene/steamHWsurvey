@@ -803,9 +803,80 @@ legend_str = legend_str + "}$$"
 
 readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
 
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.1.10 Intel Arc
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+num_months = 36
+
+cur_stats_txt = (
+    "```mermaid\n"
+    + """---
+config:
+    xyChart:
+        width: 700
+        height: 400
+        
+    themeVariables:
+        xyChart:
+            plotColorPalette: "#0071C5"
+
+--- 
+\n"""
+)
+
+### add title and x-axis & y-axis info
+cur_stats_txt = (
+    cur_stats_txt
+    + """
+xychart-beta
+    title "Intel Arc cards in months after (first seen). No models are currently distinguished on the shs website"
+"""
+)
+cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
+
+### calculate actual line values and extract date when card was first seen
+gpu_list = ["Arc"]
+first_seen_month_list = []
+for gpu in gpu_list:
+    gpu_stats_df = (
+        df[
+            (df["category"] == "Video Card Description")
+            & (df["name"].str.contains(gpu))
+            & (df["name"].str.lower().str.contains("intel"))
+        ]
+        .groupby("date")["percentage"]
+        .sum()
+        .iloc[:num_months]
+    )
+    try:
+        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+    except:
+        first_seen_month_list.append("---")
+    gpu_stats_df = gpu_stats_df * 100
+    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
+
+# Format and add legend as LATEX code to allow for coloring
+legend_str = "$${"
+for i, gpu in enumerate(gpu_list):
+    legend_str = (
+        legend_str
+        + "\color{"
+        + "#0071C5"
+        + "}"
+        + gpu
+        + f"\space({first_seen_month_list[i]})"
+        + "\space\space\space"
+    )
+legend_str = legend_str + "}$$"
+
+readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.10 VRAM
+## 3.1.11 VRAM
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 readme_content = readme_content + """\n### VRAM \n"""
@@ -2303,7 +2374,7 @@ for platform in ["pc", "linux", "mac"]:
         # ensure all years have values
         ram_platform_stats_list = []
         last_known_value = 0
-        for q in ram_platform_grp_quarter_df["quarter"].unique():
+        for q in ram_grp_quarter_df["quarter"].unique():
             ram_platform_q_df = ram_platform_stats_df[ram_platform_stats_df["quarter"] == q]
             if len(ram_platform_q_df) > 0:
                 ram_platform_value = float(ram_platform_q_df["cumsum"].values[0])
