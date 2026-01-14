@@ -806,6 +806,14 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## 3.1.10 Intel Arc
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+readme_content = (
+    readme_content
+    + """### Intel Arc cards
+
+Compare GPUs across Generations, first month a GPU appears in Steam Hardware Survey = month 0.
+No Arc models are currently distinguished on the steam hardware survey website\n
+"""
+)
 
 num_months = 36
 
@@ -830,7 +838,7 @@ cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "Intel Arc cards in months after (first seen). No models are currently distinguished on the shs website"
+    title "Intel Arc cards in months after (first seen). All variants."
 """
 )
 cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
