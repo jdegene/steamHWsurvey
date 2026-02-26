@@ -43,7 +43,17 @@ readme_content = """# Files Description
 * Data from December 2024 (uploaded January 2025) did show larger inconsistencies as mentioned by [Devaniti](https://github.com/jdegene/steamHWsurvey/issues/6), where sums can add up to mathmatically incorrect >100%. The data remained as is throughout January (i.e. was not revised by Steam). The following February upload (of January 2025 data) seems to be correct again, and was changed around February 19th 2025 by Steam to account for correct changes in relation to December (e.g. the first entry for Windows 11 from beginning of February changed from  "-0.0150,0.5346" to "0.0034,0.5346" at that date). The current dataset contains the revised data from February 19th 2025 AND the recalculated values for December 2024 using the revised changes. For a pre-calculated version of December 2024 data see commit #7017769
 
 
-## Official Information posted on the Steam Hardware Survey Site
+## Official Information posted on the Steam Hardware Survey / Steam Site
+
+[Steam Client Beta - February 24th](https://store.steampowered.com/news/group/4397053/view/512983651355462232)
+
+Hardware Survey / System Information
+
+* Fixed an issue where VRAM on some graphics cards was not reported correctly (-1)
+* In the case of multiple display adapters, we now select the one with the most VRAM to display and report to Steam
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 STEAM HARDWARE SURVEY FIX – 5/2/2018
 
@@ -96,6 +106,12 @@ This is raw data, expect some weirdness ;) \n
 # %% 3.1 GPU stats
 # ---------------------------------------------------------------------------------------------
 readme_content = readme_content + "\n## GPUs \n"
+
+readme_content = (
+    readme_content
+    + """Uses stats from the shs main page (combined), items that only appear on the
+    platform specific pages (pc, linux, mac) are only included when explicitely mentioned. \n"""
+)
 
 # colors_list = ["#CB7876", "#62866C", "#32769B", "#64557B", "#F67B45"]
 colors_list = ["#51a8a6", "#f9a900", "#f92800", "#d92080", "#8a52a6"]
