@@ -65235,7 +65235,7 @@ date,category,name,change,percentage
 2026-02-01,Video Card Description,Intel Iris Xe Graphics,0.04385964912280685,0.017849999999999998
 2026-02-01,Video Card Description,Intel UHD Graphics 620,0.05555555555555561,0.00475
 2026-02-01,Video Card Description,Intel UHD Graphics 630,0.03571428571428566,0.0029
-2026-02-01,Video Card Description,Intel(R) Arc(TM) Graphics,-0.001,0.0016
+2026-02-01,Video Card Description,Intel(R) Arc(TM) Graphics,0.076,0.0028
 2026-02-01,Video Card Description,Intel(R) Graphics,0.12499999999998206,0.0031499999999999497
 2026-02-01,Video Card Description,Intel(R) UHD Graphics,-0.15804597701149709,0.01464999999999995
 2026-02-01,Video Card Description,NVIDIA GeForce GTX 1050,-0.008196721311475502,0.00605
@@ -65588,7 +65588,7 @@ date,category,name,change,percentage
 2026-03-01,Video Card Description,AMD Radeon Vega 8 Graphics,0.014084507042253435,0.0036
 2026-03-01,Video Card Description,AMD Radeon(TM) Graphics,0.031531531531531654,0.0229
 2026-03-01,Video Card Description,AMD Raphael,0.0019,0.0019
-2026-03-01,Video Card Description,Intel Arc Graphics,0.003,0.003
+2026-03-01,Video Card Description,Intel Arc Graphics,0.07,0.003
 2026-03-01,Video Card Description,Intel HD Graphics 4600,0.0018,0.0018
 2026-03-01,Video Card Description,Intel HD Graphics 520,0.0023,0.0023
 2026-03-01,Video Card Description,Intel HD Graphics 620,0.0022,0.0022
