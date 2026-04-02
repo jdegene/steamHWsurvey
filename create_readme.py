@@ -45,7 +45,7 @@ readme_content = """# Files Description
 
 ## Official Information posted on the Steam Hardware Survey / Steam Site
 
-[Steam Client Beta - February 24th](https://store.steampowered.com/news/group/4397053/view/512983651355462232)
+[Steam Client Beta - February 24th 2026](https://store.steampowered.com/news/group/4397053/view/512983651355462232)
 
 Hardware Survey / System Information
 
