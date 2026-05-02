@@ -438,8 +438,13 @@ $${min \space VRAM: \space\space\space
 
 
 ## OS 
+The totals in these charts are mathematically reconstructed from the detailed breakdown of individual operating systems. Steam's official headline numbers often contradict their own line-item data. Here is exactly how the totals are calculated and why they diverge (Linux April 2026 data):
 
- The totals in these charts are mathematically reconstructed from the detailed breakdown of individual operating systems. However, because the steam hardware surveys internal math is often inconsistent (the detailed system percentages don't actually add up to their published headline totals), he following charts may diverge slightly from their official summary numbers. 
+* **The Missing Data:** Steam's main page omits massive chunks of users. For example, SteamOS accounts for ~23% of all Linux users, but is completely hidden from the main page.
+* **Used Method:** the visible OS versions from the main page are matched to the detailed platform page to scale the numbers correctly.
+* **The Math:** In April 2026, the 10 visible Linux distros on the main page summed to **1.13%** of *all Steam users*. On the Linux-specific page, those exact same 10 distros accounted for **31.2%** of *all Linux users*.
+* **The Result:** If 31.2% of Linux users equals 1.13% of total Steam users, then 100% of Linux users equals **3.62%**.
+* **The Discrepancy:** Steam published a headline Linux share of **4.52%** for that month. Because Steam uses inconsistent user-base denominators between their overview and detail pages, their math breaks. These charts plot the mathematically reconstructed data (3.62%) rather than the faulty headline numbers.
 
 ```mermaid
 ---
