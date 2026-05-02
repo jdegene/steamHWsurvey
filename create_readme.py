@@ -32,7 +32,7 @@ readme_content = """# Files Description
 
 * After an initial release of December 2022 hardware data that showed [some odd discrepancies](https://archive.is/XyyNP), Steam reuploaded a revised dataset. The current shs.csv uses the revised data (original data can be found in first commit for December 2022 data)
 
-* Data from March 2023 (= posted in April 2023 on the steam website) saw unusual spikes in several areas (like growth in "Language: Simplified Chinese" or "Intel CPU" share amongst others). The reason was never officially addressed (but may be due to similar reasons as pointed in official statements by steam below) nor was the data updated during the span April on the website. With the April data update in May, these outliers have seemed to be mitigated and numbers are closer to prior months. Similar for [Feb 2026 data](https://github.com/jdegene/steamHWsurvey/issues/12), solved by averaging Jan/March 2026.
+* Data from March 2023 (= posted in April 2023 on the steam website) saw unusual spikes in several areas (like growth in "Language: Simplified Chinese" or "Intel CPU" share amongst others). The reason was never officially addressed (but may be due to similar reasons as pointed in official statements by steam below) nor was the data updated during the span April on the website. With the April data update in May, these outliers have seemed to be mitigated and numbers are closer to prior months. Similar for [Feb 2026 data](https://github.com/jdegene/steamHWsurvey/issues/12), mitigated for some categories by averaging Jan/March 2026 - treat Feb 2026 data as faulty.
 
 * As mentioned by [likudo](https://github.com/jdegene/steamHWsurvey/issues/4) the raw data omits the category "others". Creating a category sum can as such create misleading results. Refer to the platform specific data instead.
 
@@ -135,20 +135,30 @@ config:
 annual_gpu_df = df[df["category"] == "Video Card Description"].copy()
 annual_gpu_df["type"] = "Other"
 annual_gpu_df["type"] = np.where(
-    annual_gpu_df["name"].str.lower().str.contains("nvidia"), "NVIDIA", annual_gpu_df["type"]
+    annual_gpu_df["name"].str.lower().str.contains("nvidia"),
+    "NVIDIA",
+    annual_gpu_df["type"],
 )
 annual_gpu_df["type"] = np.where(
-    annual_gpu_df["name"].str.lower().str.contains("amd |ati "), "AMD", annual_gpu_df["type"]
+    annual_gpu_df["name"].str.lower().str.contains("amd |ati "),
+    "AMD",
+    annual_gpu_df["type"],
 )
 annual_gpu_df["type"] = np.where(
-    annual_gpu_df["name"].str.lower().str.contains("intel "), "Intel", annual_gpu_df["type"]
+    annual_gpu_df["name"].str.lower().str.contains("intel "),
+    "Intel",
+    annual_gpu_df["type"],
 )
 
 # sum up percentages per day, then return average percentages per year
-annual_gpu_grp_df = annual_gpu_df.groupby(["date", "type"])["percentage"].sum().reset_index()
+annual_gpu_grp_df = (
+    annual_gpu_df.groupby(["date", "type"])["percentage"].sum().reset_index()
+)
 annual_gpu_grp_df["year"] = annual_gpu_grp_df["date"].dt.year
 annual_gpu_grp_df = (
-    annual_gpu_grp_df.groupby(["year", "type"])["percentage"].mean().reset_index()
+    annual_gpu_grp_df.groupby(["year", "type"])["percentage"]
+    .mean()
+    .reset_index()
 )
 
 ### add title and x-axis & y-axis info. Use official venfor colors
@@ -200,7 +210,9 @@ legend_str = """$${\color{#76b900}NIVIDA\space\space\space
 \color{#0071C5}Intel\space\space\space
 \color{#808080}Other\space\space\space}$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -253,20 +265,27 @@ def extract_gpu_generation(name):
 
 
 # Apply the function to create new column
-nvidia_gen_df["generation"] = nvidia_gen_df["name"].apply(extract_gpu_generation)
+nvidia_gen_df["generation"] = nvidia_gen_df["name"].apply(
+    extract_gpu_generation
+)
 nvidia_gen_grp_df = (
-    nvidia_gen_df.groupby(["date", "generation"])["percentage"].sum().reset_index()
+    nvidia_gen_df.groupby(["date", "generation"])["percentage"]
+    .sum()
+    .reset_index()
 )
 
 # get only last 9 years or x-axis will not fit all labels
 nvidia_gen_grp_df = nvidia_gen_grp_df[
-    nvidia_gen_grp_df["date"].dt.year >= (nvidia_gen_grp_df["date"].max().year - 9)
+    nvidia_gen_grp_df["date"].dt.year
+    >= (nvidia_gen_grp_df["date"].max().year - 9)
 ]
 nvidia_gen_grp_df["quarter"] = (
     nvidia_gen_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
 )
 nvidia_gen_quarter_df = (
-    nvidia_gen_grp_df.groupby(["quarter", "generation"])["percentage"].mean().reset_index()
+    nvidia_gen_grp_df.groupby(["quarter", "generation"])["percentage"]
+    .mean()
+    .reset_index()
 )
 
 nvidia_color_list = [
@@ -308,7 +327,9 @@ xychart-beta
 cur_stats_txt = (
     cur_stats_txt
     + "    x-axis "
-    + str([i for i in nvidia_gen_quarter_df["quarter"].unique()]).replace("'", "")
+    + str([i for i in nvidia_gen_quarter_df["quarter"].unique()]).replace(
+        "'", ""
+    )
     + "\n"
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
@@ -336,7 +357,9 @@ for gen in [i for i in gen_list] + ["Other"]:
             gen_value = 0
         nvidia_gen_stats_list.append(gen_value)
 
-    cur_stats_txt = cur_stats_txt + "    line " + str(nvidia_gen_stats_list) + "\n"
+    cur_stats_txt = (
+        cur_stats_txt + "    line " + str(nvidia_gen_stats_list) + "\n"
+    )
 
 legend_str = "$${"
 for i, gen in enumerate(gen_list):
@@ -350,7 +373,9 @@ for i, gen in enumerate(gen_list):
     )
 legend_str = legend_str + "\color{#808080}Other\space\space\space}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## 3.1.2 NVIDIA xx90s market penetration in months after "first seen month". Adds all variants together
@@ -376,7 +401,9 @@ xychart-beta
     title "NVIDIA xx90 cards in months after (first seen). All variants."
 """
 )
-cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = (
+    cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+)
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 ### calculate actual line values and extract date when card was first seen
@@ -394,11 +421,15 @@ for gpu in gpu_list:
         .iloc[:num_months]
     )
     try:
-        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+        first_seen_month_list.append(
+            gpu_stats_df.index[0].strftime("%b \space %Y")
+        )
     except:
         first_seen_month_list.append("--")
     gpu_stats_df = gpu_stats_df * 100
-    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    gpu_stats_list = (
+        gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    )
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
 
 # Format and add legend as LATEX code to allow for coloring
@@ -415,7 +446,9 @@ for i, gpu in enumerate(gpu_list):
     )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -432,7 +465,9 @@ xychart-beta
     title "NVIDIA xx80 cards in months after (first seen). All variants."
 """
 )
-cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = (
+    cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+)
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 ### calculate actual line values and extract date when card was first seen
@@ -450,11 +485,15 @@ for gpu in gpu_list:
         .iloc[:num_months]
     )
     try:
-        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+        first_seen_month_list.append(
+            gpu_stats_df.index[0].strftime("%b \space %Y")
+        )
     except:
         first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
-    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    gpu_stats_list = (
+        gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    )
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
 
 # Format and add legend as LATEX code to allow for coloring
@@ -471,7 +510,9 @@ for i, gpu in enumerate(gpu_list):
     )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -488,7 +529,9 @@ xychart-beta
     title "NVIDIA xx70 cards in months after (first seen). All variants."
 """
 )
-cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = (
+    cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+)
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 ### calculate actual line values
@@ -506,11 +549,15 @@ for gpu in gpu_list:
         .iloc[:num_months]
     )
     try:
-        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+        first_seen_month_list.append(
+            gpu_stats_df.index[0].strftime("%b \space %Y")
+        )
     except:
         first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
-    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    gpu_stats_list = (
+        gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    )
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
 
 # Format and add legend as LATEX code to allow for coloring
@@ -527,7 +574,9 @@ for i, gpu in enumerate(gpu_list):
     )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -544,7 +593,9 @@ xychart-beta
     title "NVIDIA xx60 cards in months after (first seen). All variants."
 """
 )
-cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = (
+    cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+)
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 ### calculate actual line values and extract date when card was first seen
@@ -562,11 +613,15 @@ for gpu in gpu_list:
         .iloc[:num_months]
     )
     try:
-        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+        first_seen_month_list.append(
+            gpu_stats_df.index[0].strftime("%b \space %Y")
+        )
     except:
         first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
-    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    gpu_stats_list = (
+        gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    )
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
 
 # Format and add legend as LATEX code to allow for coloring
@@ -583,7 +638,9 @@ for i, gpu in enumerate(gpu_list):
     )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -610,7 +667,9 @@ xychart-beta
     title "AMD High-End cards in months after (first seen). All variants."
 """
 )
-cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = (
+    cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+)
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 ### calculate actual line values and extract date when card was first seen
@@ -628,11 +687,15 @@ for gpu in gpu_list:
         .iloc[:num_months]
     )
     try:
-        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+        first_seen_month_list.append(
+            gpu_stats_df.index[0].strftime("%b \space %Y")
+        )
     except:
         first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
-    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    gpu_stats_list = (
+        gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    )
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
 
 # Format and add legend as LATEX code to allow for coloring
@@ -649,7 +712,9 @@ for i, gpu in enumerate(gpu_list):
     )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -666,7 +731,9 @@ xychart-beta
     title "AMD Upper-Midrange cards in months after (first seen). All variants."
 """
 )
-cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = (
+    cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+)
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 ### calculate actual line values and extract date when card was first seen
@@ -684,11 +751,15 @@ for gpu in gpu_list:
         .iloc[:num_months]
     )
     try:
-        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+        first_seen_month_list.append(
+            gpu_stats_df.index[0].strftime("%b \space %Y")
+        )
     except:
         first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
-    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    gpu_stats_list = (
+        gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    )
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
 
 # Format and add legend as LATEX code to allow for coloring
@@ -705,7 +776,9 @@ for i, gpu in enumerate(gpu_list):
     )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -722,7 +795,9 @@ xychart-beta
     title "AMD Midrange cards in months after (first seen). All variants."
 """
 )
-cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = (
+    cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+)
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 ### calculate actual line values and extract date when card was first seen
@@ -740,11 +815,15 @@ for gpu in gpu_list:
         .iloc[:num_months]
     )
     try:
-        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+        first_seen_month_list.append(
+            gpu_stats_df.index[0].strftime("%b \space %Y")
+        )
     except:
         first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
-    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    gpu_stats_list = (
+        gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    )
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
 
 # Format and add legend as LATEX code to allow for coloring
@@ -761,7 +840,9 @@ for i, gpu in enumerate(gpu_list):
     )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -778,7 +859,9 @@ xychart-beta
     title "AMD Midrange cards in months after (first seen). All variants."
 """
 )
-cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = (
+    cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+)
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 ### calculate actual line values and extract date when card was first seen
@@ -796,11 +879,15 @@ for gpu in gpu_list:
         .iloc[:num_months]
     )
     try:
-        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+        first_seen_month_list.append(
+            gpu_stats_df.index[0].strftime("%b \space %Y")
+        )
     except:
         first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
-    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    gpu_stats_list = (
+        gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    )
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
 
 # Format and add legend as LATEX code to allow for coloring
@@ -817,7 +904,9 @@ for i, gpu in enumerate(gpu_list):
     )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## 3.1.10 Intel Arc
@@ -857,7 +946,9 @@ xychart-beta
     title "Intel Arc cards in months after (first seen). All variants."
 """
 )
-cur_stats_txt = cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+cur_stats_txt = (
+    cur_stats_txt + "    x-axis" + str([i for i in range(num_months)]) + "\n"
+)
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
 
 ### calculate actual line values and extract date when card was first seen
@@ -875,11 +966,15 @@ for gpu in gpu_list:
         .iloc[:num_months]
     )
     try:
-        first_seen_month_list.append(gpu_stats_df.index[0].strftime("%b \space %Y"))
+        first_seen_month_list.append(
+            gpu_stats_df.index[0].strftime("%b \space %Y")
+        )
     except:
         first_seen_month_list.append("---")
     gpu_stats_df = gpu_stats_df * 100
-    gpu_stats_list = gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    gpu_stats_list = (
+        gpu_stats_df.to_list() if len(gpu_stats_df.to_list()) > 0 else [0]
+    )
     cur_stats_txt = cur_stats_txt + "    line " + str(gpu_stats_list) + "\n"
 
 # Format and add legend as LATEX code to allow for coloring
@@ -896,7 +991,9 @@ for i, gpu in enumerate(gpu_list):
     )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -909,7 +1006,8 @@ vram_df = df[df["category"] == "VRAM"].copy()
 
 # create numeric column that contains GB VRAM amount
 vram_df["VRAM_GB"] = pd.to_numeric(
-    vram_df["name"].str.lower().str.replace(" mb", "").str.replace(" gb", ""), errors="coerce"
+    vram_df["name"].str.lower().str.replace(" mb", "").str.replace(" gb", ""),
+    errors="coerce",
 )
 vram_df["VRAM_GB"] = np.where(
     vram_df["name"].str.lower().str.contains(" mb"),
@@ -919,25 +1017,45 @@ vram_df["VRAM_GB"] = np.where(
 
 # bin VRAM sizes
 vram_df["VRAM_GB_bins"] = "Others"
-vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 0, "0", vram_df["VRAM_GB_bins"])
-vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 4, "4", vram_df["VRAM_GB_bins"])
-vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 8, "8", vram_df["VRAM_GB_bins"])
-vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 12, "12", vram_df["VRAM_GB_bins"])
-vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 16, "16", vram_df["VRAM_GB_bins"])
-vram_df["VRAM_GB_bins"] = np.where(vram_df["VRAM_GB"] >= 24, "24", vram_df["VRAM_GB_bins"])
+vram_df["VRAM_GB_bins"] = np.where(
+    vram_df["VRAM_GB"] >= 0, "0", vram_df["VRAM_GB_bins"]
+)
+vram_df["VRAM_GB_bins"] = np.where(
+    vram_df["VRAM_GB"] >= 4, "4", vram_df["VRAM_GB_bins"]
+)
+vram_df["VRAM_GB_bins"] = np.where(
+    vram_df["VRAM_GB"] >= 8, "8", vram_df["VRAM_GB_bins"]
+)
+vram_df["VRAM_GB_bins"] = np.where(
+    vram_df["VRAM_GB"] >= 12, "12", vram_df["VRAM_GB_bins"]
+)
+vram_df["VRAM_GB_bins"] = np.where(
+    vram_df["VRAM_GB"] >= 16, "16", vram_df["VRAM_GB_bins"]
+)
+vram_df["VRAM_GB_bins"] = np.where(
+    vram_df["VRAM_GB"] >= 24, "24", vram_df["VRAM_GB_bins"]
+)
 
 # get only last 9 years or x-axis will not fit all labels
 vram_df = vram_df[vram_df["date"].dt.year >= (vram_df["date"].max().year - 9)]
 
 # get percentages and also add a cumsum column
-vram_grp_df = vram_df.groupby(["date", "VRAM_GB_bins"])["percentage"].sum().reset_index()
+vram_grp_df = (
+    vram_df.groupby(["date", "VRAM_GB_bins"])["percentage"].sum().reset_index()
+)
 
-vram_grp_df["VRAM_numeric"] = pd.to_numeric(vram_grp_df["VRAM_GB_bins"], errors="coerce")
-vram_grp_df = vram_grp_df.sort_values(["date", "VRAM_numeric"], ascending=[True, False])
+vram_grp_df["VRAM_numeric"] = pd.to_numeric(
+    vram_grp_df["VRAM_GB_bins"], errors="coerce"
+)
+vram_grp_df = vram_grp_df.sort_values(
+    ["date", "VRAM_numeric"], ascending=[True, False]
+)
 vram_grp_df["cumsum"] = vram_grp_df.groupby("date")["percentage"].cumsum()
 vram_grp_df.loc[vram_grp_df["VRAM_GB_bins"] == "Others", "cumsum"] = np.nan
 
-vram_grp_df["quarter"] = vram_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+vram_grp_df["quarter"] = (
+    vram_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+)
 vram_grp_quarter_df = (
     vram_grp_df.groupby(["quarter", "VRAM_GB_bins"])[["percentage", "cumsum"]]
     .mean()
@@ -972,7 +1090,9 @@ xychart-beta
 cur_stats_txt = (
     cur_stats_txt
     + "    x-axis "
-    + str([i for i in vram_grp_quarter_df["quarter"].unique()]).replace("'", "")
+    + str([i for i in vram_grp_quarter_df["quarter"].unique()]).replace(
+        "'", ""
+    )
     + "\n"
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
@@ -984,7 +1104,9 @@ for l in [25, 50, 75]:
 
 
 for ops in ["4", "8", "12", "16", "24"]:
-    vram_stats_df = vram_grp_quarter_df[vram_grp_quarter_df["VRAM_GB_bins"] == ops].copy()
+    vram_stats_df = vram_grp_quarter_df[
+        vram_grp_quarter_df["VRAM_GB_bins"] == ops
+    ].copy()
     vram_stats_df["cumsum"] = vram_stats_df["cumsum"] * 100
 
     # ensure all years have values
@@ -996,7 +1118,9 @@ for ops in ["4", "8", "12", "16", "24"]:
             vram_value = float(vram_q_df["cumsum"].values[0])
             last_known_value = vram_value
         else:
-            vram_value = last_known_value  # set non existing to last known value
+            vram_value = (
+                last_known_value  # set non existing to last known value
+            )
         os_stats_list.append(vram_value)
 
     cur_stats_txt = cur_stats_txt + "    line " + str(os_stats_list) + "\n"
@@ -1008,7 +1132,9 @@ legend_str = """$${min \space VRAM: \space\space\space
 \color{#d92080}16GB\space\space\space
 \color{#8a52a6}24GB\space\space\space}$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1017,7 +1143,10 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 readme_content = readme_content + "\n## OS \n"
 readme_content = (
     readme_content
-    + """\n Numbers are reconstructed from the platform specific data and might diverge slightly form official numbers on the main SHS page \n\n"""
+    + "\n The totals in these charts are mathematically reconstructed from the detailed breakdown of individual operating systems. "
+    + "However, because the steam hardware surveys internal math is often inconsistent (the detailed system percentages don't actually add up to their published headline totals), "
+    + "he following charts may diverge slightly from their official summary numbers. \n\n"
+    ""
 )
 
 os_df = df[df["category"] == "OS Version"].copy()
@@ -1027,13 +1156,16 @@ os_df["OS"] = "Other"
 os_df["OS"] = np.where(
     os_df["name"].str.lower().str.contains("windows"), "Windows", os_df["OS"]
 )
-os_df["OS"] = np.where(os_df["name"].str.lower().str.contains("macos"), "MacOS", os_df["OS"])
+os_df["OS"] = np.where(
+    os_df["name"].str.lower().str.contains("macos"), "MacOS", os_df["OS"]
+)
 
 # get list of all linux distros from platform specific stats
 linux_v_list = [
     i
     for i in df_platform[
-        (df_platform["platform"] == "linux") & (df_platform["category"] == "Linux Version")
+        (df_platform["platform"] == "linux")
+        & (df_platform["category"] == "Linux Version")
     ]["name"].unique()
     if i.lower() != "other"
 ]
@@ -1043,7 +1175,9 @@ os_df["OS"] = np.where(os_df["name"].isin(linux_v_list), "Linux", os_df["OS"])
 # add correcting factors from shs platform sites, as main page does not show all distros
 # percentages -> sum of displayed percentages is <100%
 os_correct_platform_df = df_platform[
-    df_platform["category"].isin(["Linux Version", "Windows Version", "OSX Version"])
+    df_platform["category"].isin(
+        ["Linux Version", "Windows Version", "OSX Version"]
+    )
 ].rename(columns={"percentage": "percentage_platf"})
 
 os_df = os_df.merge(
@@ -1051,7 +1185,9 @@ os_df = os_df.merge(
     on=["date", "name"],
     how="left",
 )
-os_df["corr_fac"] = 1 / os_df.groupby(["date", "OS"])["percentage_platf"].transform("sum")
+os_df["corr_fac"] = 1 / os_df.groupby(["date", "OS"])[
+    "percentage_platf"
+].transform("sum")
 
 # Fix instances where no platform data can be matched and corr_fac calculation fails
 # by using previous month corr_fac
@@ -1070,8 +1206,12 @@ os_df = os_df[os_df["date"].dt.year >= (os_df["date"].max().year - 9)]
 
 os_grp_df = os_df.groupby(["date", "OS"])["percentage"].sum().reset_index()
 
-os_grp_df["quarter"] = os_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
-os_grp_quarter_df = os_grp_df.groupby(["quarter", "OS"])["percentage"].mean().reset_index()
+os_grp_df["quarter"] = (
+    os_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+)
+os_grp_quarter_df = (
+    os_grp_df.groupby(["quarter", "OS"])["percentage"].mean().reset_index()
+)
 
 
 ### CREATE ONE GRAPH FOR WINDOWS FIRST
@@ -1185,7 +1325,9 @@ legend_str = """$${\color{#00A4EF}Windows\space\space\space
 \color{#FFFFFF}Mac\space\space\space
 }$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1195,32 +1337,47 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 readme_content = readme_content + """### Windows \n"""
 
 pc_df = df_platform[
-    (df_platform["platform"] == "pc") & (df_platform["category"] == "Windows Version")
+    (df_platform["platform"] == "pc")
+    & (df_platform["category"] == "Windows Version")
 ].copy()
 pc_df["Windows"] = "Other"
 
 pc_df["Windows"] = np.where(
-    pc_df["name"].str.lower().str.contains("windows 7"), "Win 7", pc_df["Windows"]
+    pc_df["name"].str.lower().str.contains("windows 7"),
+    "Win 7",
+    pc_df["Windows"],
 )
 pc_df["Windows"] = np.where(
-    pc_df["name"].str.lower().str.contains("windows 8"), "Win 8", pc_df["Windows"]
+    pc_df["name"].str.lower().str.contains("windows 8"),
+    "Win 8",
+    pc_df["Windows"],
 )
 pc_df["Windows"] = np.where(
-    pc_df["name"].str.lower().str.contains("windows 10"), "Win 10", pc_df["Windows"]
+    pc_df["name"].str.lower().str.contains("windows 10"),
+    "Win 10",
+    pc_df["Windows"],
 )
 pc_df["Windows"] = np.where(
-    pc_df["name"].str.lower().str.contains("windows 11"), "Win 11", pc_df["Windows"]
+    pc_df["name"].str.lower().str.contains("windows 11"),
+    "Win 11",
+    pc_df["Windows"],
 )
 
 
 # get only last 9 years or x-axis will not fit all labels
 pc_df = pc_df[pc_df["date"].dt.year >= (pc_df["date"].max().year - 9)]
 
-pc_grp_df = pc_df.groupby(["date", "Windows"])["percentage"].sum().reset_index()
+pc_grp_df = (
+    pc_df.groupby(["date", "Windows"])["percentage"].sum().reset_index()
+)
 
-pc_grp_df["quarter"] = pc_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+pc_grp_df["quarter"] = (
+    pc_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+)
 pc_grp_quarter_df = (
-    pc_grp_df.groupby(["quarter", "Windows"])["percentage"].mean().reset_index()
+    pc_grp_df.groupby(["quarter", "Windows"])["percentage"]
+    .mean()
+    .reset_index()
 )
 
 ### add title and x-axis & y-axis info
@@ -1283,7 +1440,9 @@ legend_str = """$${\color{#51a8a6}Win 7\space\space\space
 \color{#d92080}Win 11\space\space\space
 \color{#808080}Other\space\space\space}$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1293,41 +1452,64 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 readme_content = readme_content + """### Linux \n"""
 
 linux_df = df_platform[
-    (df_platform["platform"] == "linux") & (df_platform["category"] == "Linux Version")
+    (df_platform["platform"] == "linux")
+    & (df_platform["category"] == "Linux Version")
 ].copy()
 linux_df["Linux"] = "Other"
 
 linux_df["Linux"] = np.where(
-    linux_df["name"].str.lower().str.contains("steamos"), "SteamOS", linux_df["Linux"]
+    linux_df["name"].str.lower().str.contains("steamos"),
+    "SteamOS",
+    linux_df["Linux"],
 )
 linux_df["Linux"] = np.where(
-    linux_df["name"].str.lower().str.contains("arch"), "Arch", linux_df["Linux"]
+    linux_df["name"].str.lower().str.contains("arch"),
+    "Arch",
+    linux_df["Linux"],
 )
 linux_df["Linux"] = np.where(
-    linux_df["name"].str.lower().str.contains("mint"), "Mint", linux_df["Linux"]
+    linux_df["name"].str.lower().str.contains("mint"),
+    "Mint",
+    linux_df["Linux"],
 )
 linux_df["Linux"] = np.where(
-    linux_df["name"].str.lower().str.contains("ubuntu"), "Ubuntu", linux_df["Linux"]
+    linux_df["name"].str.lower().str.contains("ubuntu"),
+    "Ubuntu",
+    linux_df["Linux"],
 )
 linux_df["Linux"] = np.where(
-    linux_df["name"].str.lower().str.contains("manjaro"), "Manjaro", linux_df["Linux"]
+    linux_df["name"].str.lower().str.contains("manjaro"),
+    "Manjaro",
+    linux_df["Linux"],
 )
 linux_df["Linux"] = np.where(
-    linux_df["name"].str.lower().str.contains("pop!"), "Pop!_OS", linux_df["Linux"]
+    linux_df["name"].str.lower().str.contains("pop!"),
+    "Pop!_OS",
+    linux_df["Linux"],
 )
 linux_df["Linux"] = np.where(
-    linux_df["name"].str.lower().str.contains("debian"), "Debian", linux_df["Linux"]
+    linux_df["name"].str.lower().str.contains("debian"),
+    "Debian",
+    linux_df["Linux"],
 )
 
 
 # get only last 9 years or x-axis will not fit all labels
-linux_df = linux_df[linux_df["date"].dt.year >= (linux_df["date"].max().year - 9)]
+linux_df = linux_df[
+    linux_df["date"].dt.year >= (linux_df["date"].max().year - 9)
+]
 
-linux_grp_df = linux_df.groupby(["date", "Linux"])["percentage"].sum().reset_index()
+linux_grp_df = (
+    linux_df.groupby(["date", "Linux"])["percentage"].sum().reset_index()
+)
 
-linux_grp_df["quarter"] = linux_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+linux_grp_df["quarter"] = (
+    linux_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+)
 linux_grp_quarter_df = (
-    linux_grp_df.groupby(["quarter", "Linux"])["percentage"].mean().reset_index()
+    linux_grp_df.groupby(["quarter", "Linux"])["percentage"]
+    .mean()
+    .reset_index()
 )
 
 ### add title and x-axis & y-axis info
@@ -1357,7 +1539,9 @@ xychart-beta
 cur_stats_txt = (
     cur_stats_txt
     + "    x-axis "
-    + str([i for i in linux_grp_quarter_df["quarter"].unique()]).replace("'", "")
+    + str([i for i in linux_grp_quarter_df["quarter"].unique()]).replace(
+        "'", ""
+    )
     + "\n"
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
@@ -1368,8 +1552,19 @@ for l in [25, 50, 75]:
     reference_line = [l] * num_years  # Creates [50, 50, 50, ...]
     cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
-for ops in ["SteamOS", "Arch", "Mint", "Ubuntu", "Manjaro", "Pop!_OS", "Debian", "Other"]:
-    os_stats_df = linux_grp_quarter_df[linux_grp_quarter_df["Linux"] == ops].copy()
+for ops in [
+    "SteamOS",
+    "Arch",
+    "Mint",
+    "Ubuntu",
+    "Manjaro",
+    "Pop!_OS",
+    "Debian",
+    "Other",
+]:
+    os_stats_df = linux_grp_quarter_df[
+        linux_grp_quarter_df["Linux"] == ops
+    ].copy()
     os_stats_df["percentage"] = os_stats_df["percentage"] * 100
 
     # ensure all years have values
@@ -1393,7 +1588,9 @@ legend_str = """$${\color{#51a8a6}SteamOS\space\space\space
 \color{#32CD32}Debian\space\space\space
 \color{#808080}Other\space\space\space}$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1405,13 +1602,16 @@ readme_content = readme_content + """### Mac OSX \n"""
 versions_list = [10, 11, 12, 13, 14, 15, 26]
 
 mac_df = df_platform[
-    (df_platform["platform"] == "mac") & (df_platform["category"] == "OSX Version")
+    (df_platform["platform"] == "mac")
+    & (df_platform["category"] == "OSX Version")
 ].copy()
 
 mac_df["OSX"] = "Other"
 for v in versions_list:
     mac_df["OSX"] = np.where(
-        mac_df["name"].str.lower().str.startswith(f"macos {v}"), f"{v}", mac_df["OSX"]
+        mac_df["name"].str.lower().str.startswith(f"macos {v}"),
+        f"{v}",
+        mac_df["OSX"],
     )
 
 # get only last 9 years or x-axis will not fit all labels
@@ -1419,8 +1619,12 @@ mac_df = mac_df[mac_df["date"].dt.year >= (mac_df["date"].max().year - 9)]
 
 mac_grp_df = mac_df.groupby(["date", "OSX"])["percentage"].sum().reset_index()
 
-mac_grp_df["quarter"] = mac_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
-mac_grp_quarter_df = mac_grp_df.groupby(["quarter", "OSX"])["percentage"].mean().reset_index()
+mac_grp_df["quarter"] = (
+    mac_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+)
+mac_grp_quarter_df = (
+    mac_grp_df.groupby(["quarter", "OSX"])["percentage"].mean().reset_index()
+)
 
 
 ### add title and x-axis & y-axis info
@@ -1503,7 +1707,9 @@ for i, os_v in enumerate(versions_list):
     )
 legend_str = legend_str + "\color{#808080}Other\space\space\space}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1534,7 +1740,9 @@ resolution_df.dropna(subset=["w", "h"], how="any", inplace=True)
 
 resolution_df["ratio"] = resolution_df["w"] / resolution_df["h"]
 resolution_df["pixels"] = resolution_df["w"] * resolution_df["h"]
-resolution_df["pixels_weighted"] = resolution_df["pixels"] * resolution_df["percentage"]
+resolution_df["pixels_weighted"] = (
+    resolution_df["pixels"] * resolution_df["percentage"]
+)
 resolution_df["w_weighted"] = resolution_df["w"] * resolution_df["percentage"]
 resolution_df["h_weighted"] = resolution_df["h"] * resolution_df["percentage"]
 
@@ -1563,22 +1771,34 @@ resolution_grp_year_df = (
 ratio_df = resolution_df.copy()
 ratio_df["ratio_name"] = "Other"
 ratio_df["ratio_name"] = np.where(
-    (ratio_df["ratio"] > 1.24) & (ratio_df["ratio"] < 1.4), "4:3", ratio_df["ratio_name"]
+    (ratio_df["ratio"] > 1.24) & (ratio_df["ratio"] < 1.4),
+    "4:3",
+    ratio_df["ratio_name"],
 )
 ratio_df["ratio_name"] = np.where(
-    (ratio_df["ratio"] > 1.49) & (ratio_df["ratio"] < 1.51), "3:2", ratio_df["ratio_name"]
+    (ratio_df["ratio"] > 1.49) & (ratio_df["ratio"] < 1.51),
+    "3:2",
+    ratio_df["ratio_name"],
 )
 ratio_df["ratio_name"] = np.where(
-    (ratio_df["ratio"] > 1.59) & (ratio_df["ratio"] < 1.7), "16:10", ratio_df["ratio_name"]
+    (ratio_df["ratio"] > 1.59) & (ratio_df["ratio"] < 1.7),
+    "16:10",
+    ratio_df["ratio_name"],
 )
 ratio_df["ratio_name"] = np.where(
-    (ratio_df["ratio"] > 1.75) & (ratio_df["ratio"] < 1.85), "16:9", ratio_df["ratio_name"]
+    (ratio_df["ratio"] > 1.75) & (ratio_df["ratio"] < 1.85),
+    "16:9",
+    ratio_df["ratio_name"],
 )
 ratio_df["ratio_name"] = np.where(
-    (ratio_df["ratio"] > 1.98) & (ratio_df["ratio"] < 2.27), "18:9", ratio_df["ratio_name"]
+    (ratio_df["ratio"] > 1.98) & (ratio_df["ratio"] < 2.27),
+    "18:9",
+    ratio_df["ratio_name"],
 )
 ratio_df["ratio_name"] = np.where(
-    (ratio_df["ratio"] > 2.3) & (ratio_df["ratio"] < 2.5), "21:9", ratio_df["ratio_name"]
+    (ratio_df["ratio"] > 2.3) & (ratio_df["ratio"] < 2.5),
+    "21:9",
+    ratio_df["ratio_name"],
 )
 
 ratio_grp_df = (
@@ -1588,14 +1808,18 @@ ratio_grp_df = (
     .reset_index()
 )
 ratio_grp_year_df = (
-    ratio_grp_df.groupby([ratio_grp_df["date"].dt.year, "ratio_name"])["percentage"]
+    ratio_grp_df.groupby([ratio_grp_df["date"].dt.year, "ratio_name"])[
+        "percentage"
+    ]
     .mean()
     .reset_index()
 )
 
 
 # create same ratio analyises per platform
-ratio_p_df = df_platform[df_platform["category"].str.contains("Resolution")].copy()
+ratio_p_df = df_platform[
+    df_platform["category"].str.contains("Resolution")
+].copy()
 ratio_p_df[["w", "h"]] = ratio_p_df["name"].str.split(" x ", expand=True)
 ratio_p_df["w"] = pd.to_numeric(ratio_p_df["w"], errors="coerce")
 ratio_p_df["h"] = pd.to_numeric(ratio_p_df["h"], errors="coerce")
@@ -1604,7 +1828,9 @@ ratio_p_df["ratio"] = ratio_p_df["w"] / ratio_p_df["h"]
 
 ratio_p_df["ratio_name"] = "Other"
 ratio_p_df["ratio_name"] = np.where(
-    (ratio_p_df["ratio"] > 1.24) & (ratio_p_df["ratio"] < 1.4), "4:3", ratio_p_df["ratio_name"]
+    (ratio_p_df["ratio"] > 1.24) & (ratio_p_df["ratio"] < 1.4),
+    "4:3",
+    ratio_p_df["ratio_name"],
 )
 ratio_p_df["ratio_name"] = np.where(
     (ratio_p_df["ratio"] > 1.49) & (ratio_p_df["ratio"] < 1.51),
@@ -1627,7 +1853,9 @@ ratio_p_df["ratio_name"] = np.where(
     ratio_p_df["ratio_name"],
 )
 ratio_p_df["ratio_name"] = np.where(
-    (ratio_p_df["ratio"] > 2.3) & (ratio_p_df["ratio"] < 2.5), "21:9", ratio_p_df["ratio_name"]
+    (ratio_p_df["ratio"] > 2.3) & (ratio_p_df["ratio"] < 2.5),
+    "21:9",
+    ratio_p_df["ratio_name"],
 )
 
 
@@ -1638,9 +1866,9 @@ ratio_p_grp_df = (
     .reset_index()
 )
 ratio_p_grp_year_df = (
-    ratio_p_grp_df.groupby([ratio_p_grp_df["date"].dt.year, "ratio_name", "platform"])[
-        "percentage"
-    ]
+    ratio_p_grp_df.groupby(
+        [ratio_p_grp_df["date"].dt.year, "ratio_name", "platform"]
+    )["percentage"]
     .mean()
     .reset_index()
 )
@@ -1693,7 +1921,9 @@ min_year = ratio_grp_year_df["date"].min()
 max_year = ratio_grp_year_df["date"].max()
 ratio_classes_list = ["4:3", "3:2", "16:10", "16:9", "18:9", "21:9", "Other"]
 for rc in ratio_classes_list:
-    rc_stats_df = ratio_grp_year_df[ratio_grp_year_df["ratio_name"] == rc].copy()
+    rc_stats_df = ratio_grp_year_df[
+        ratio_grp_year_df["ratio_name"] == rc
+    ].copy()
     rc_stats_df["percentage"] = rc_stats_df["percentage"] * 100
 
     # ensure all years have values
@@ -1716,7 +1946,9 @@ legend_str = """$${\color{#51a8a6}4:3\space\space\space
 \color{#46a2da}21:9\space\space\space
 \color{#808080}Other\space\space\space}$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1766,12 +1998,17 @@ for l in [1.77]:
     cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 cur_stats_txt = (
-    cur_stats_txt + "    line " + str(primary_display_df["ratio_weighted"].to_list()) + "\n"
+    cur_stats_txt
+    + "    line "
+    + str(primary_display_df["ratio_weighted"].to_list())
+    + "\n"
 )
 
 legend_str = """$${\color{#DB4105} For \space reference \space 1920*1080 \space ratio \space = \space 16:9 \space = \space 1.77 \space}$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1815,12 +2052,17 @@ cur_stats_txt = (
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "pixels" \n'
 cur_stats_txt = (
-    cur_stats_txt + "    line " + str(primary_display_df["pixels_weighted"].to_list()) + "\n"
+    cur_stats_txt
+    + "    line "
+    + str(primary_display_df["pixels_weighted"].to_list())
+    + "\n"
 )
 
 legend_str = """$${\color{#DB4105} For \space reference \space 1920*1080 \space = \space 2.073.600 \space pixels \space}$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1864,12 +2106,17 @@ cur_stats_txt = (
 )
 cur_stats_txt = cur_stats_txt + '    y-axis "pixels" \n'
 cur_stats_txt = (
-    cur_stats_txt + "    line " + str(mm_display_df["pixels_weighted"].to_list()) + "\n"
+    cur_stats_txt
+    + "    line "
+    + str(mm_display_df["pixels_weighted"].to_list())
+    + "\n"
 )
 
 legend_str = """$${\color{#DB4105} For \space reference \space 2x \space 1920*1080 \space = \space 4.147.200 \space pixels \space}$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1924,7 +2171,15 @@ config:
 
     min_year = platform_ratio_p_grp_year_df["date"].min()
     max_year = platform_ratio_p_grp_year_df["date"].max()
-    ratio_classes_list = ["4:3", "3:2", "16:10", "16:9", "18:9", "21:9", "Other"]
+    ratio_classes_list = [
+        "4:3",
+        "3:2",
+        "16:10",
+        "16:9",
+        "18:9",
+        "21:9",
+        "Other",
+    ]
     for rc in ratio_classes_list:
         rc_stats_df = platform_ratio_p_grp_year_df[
             platform_ratio_p_grp_year_df["ratio_name"] == rc
@@ -1951,7 +2206,13 @@ config:
     \color{#46a2da}21:9\space\space\space
     \color{#808080}Other\space\space\space}$$"""
 
-    readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+    readme_content = (
+        readme_content
+        + cur_stats_txt
+        + "``` \n"
+        + legend_str
+        + "\n\n<br/>\n\n"
+    )
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1967,9 +2228,13 @@ vr_df = df[df["category"] == "VR Headsets"].copy()
 vr_suwVRH_df = vr_df[vr_df["name"] == "Steam users with VR Headsets"].copy()
 vr_suwVRH_df["short_date"] = vr_suwVRH_df["date"].dt.strftime("%y-%m")
 
-vr_suwVRH_df["quarter"] = vr_suwVRH_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+vr_suwVRH_df["quarter"] = (
+    vr_suwVRH_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+)
 vr_suwVRH_quarter_df = (
-    vr_suwVRH_df.groupby(["quarter", "name"])["percentage"].mean().reset_index()
+    vr_suwVRH_df.groupby(["quarter", "name"])["percentage"]
+    .mean()
+    .reset_index()
 )
 
 ### add title and x-axis & y-axis info
@@ -2004,7 +2269,9 @@ cur_stats_txt = (
 )
 y_axis_max = (vr_suwVRH_df["percentage"].max() * 100) + 0.5
 y_axis_min = (vr_suwVRH_df["percentage"].min() * 100) - 0.5
-cur_stats_txt = cur_stats_txt + f'    y-axis "%" {y_axis_min}-->{y_axis_max} \n'
+cur_stats_txt = (
+    cur_stats_txt + f'    y-axis "%" {y_axis_min}-->{y_axis_max} \n'
+)
 cur_stats_txt = (
     cur_stats_txt
     + "    line "
@@ -2012,9 +2279,13 @@ cur_stats_txt = (
     + "\n"
 )
 
-legend_str = """$${\color{#DB4105} Steam users with VR Headsets \space\space\space}$$"""
+legend_str = (
+    """$${\color{#DB4105} Steam users with VR Headsets \space\space\space}$$"""
+)
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2022,7 +2293,8 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readme_content = readme_content + "\n### VR Headsets \n"
 readme_content = (
-    readme_content + "\n Shows the top 8 headsets calculated across the last 2 years \n"
+    readme_content
+    + "\n Shows the top 8 headsets calculated across the last 2 years \n"
 )
 
 vr_hs_df = vr_df[vr_df["name"] != "Steam users with VR Headsets"].copy()
@@ -2037,14 +2309,22 @@ top7_list = (
     .index[:8]
 )
 vr_hs_df["VR"] = vr_hs_df["name"]
-vr_hs_df["VR"] = np.where(vr_hs_df["VR"].isin(top7_list), vr_hs_df["VR"], "Other")
+vr_hs_df["VR"] = np.where(
+    vr_hs_df["VR"].isin(top7_list), vr_hs_df["VR"], "Other"
+)
 
 
 # get only last 5 years or x-axis will not fit all labels
-vr_hs_df = vr_hs_df[vr_hs_df["date"].dt.year >= (vr_hs_df["date"].max().year - 5)]
-vr_hs_grp_df = vr_hs_df.groupby(["date", "VR"])["percentage"].sum().reset_index()
+vr_hs_df = vr_hs_df[
+    vr_hs_df["date"].dt.year >= (vr_hs_df["date"].max().year - 5)
+]
+vr_hs_grp_df = (
+    vr_hs_df.groupby(["date", "VR"])["percentage"].sum().reset_index()
+)
 
-vr_hs_grp_df["quarter"] = vr_hs_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+vr_hs_grp_df["quarter"] = (
+    vr_hs_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+)
 vr_hs_grp_quarter_df = (
     vr_hs_grp_df.groupby(["quarter", "VR"])["percentage"].mean().reset_index()
 )
@@ -2122,11 +2402,18 @@ for vrs in sorted(list(top7_list)) + ["Other"]:
 legend_str = "$${"
 for i, vrh in enumerate(sorted(list(top7_list)) + ["Other"]):
     legend_str = (
-        legend_str + "\color{" + vr_color_list[i + 3] + "}" + vrh + "\space\space\space"
+        legend_str
+        + "\color{"
+        + vr_color_list[i + 3]
+        + "}"
+        + vrh
+        + "\space\space\space"
     )
 legend_str = legend_str + "}$$"
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -2135,7 +2422,9 @@ readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<
 readme_content = readme_content + "\n## System RAM \n"
 
 ram_df = df[df["category"].str.contains("System RAM")].copy()
-ram_platform_df = df_platform[df_platform["category"].str.contains("System RAM")].copy()
+ram_platform_df = df_platform[
+    df_platform["category"].str.contains("System RAM")
+].copy()
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2160,7 +2449,8 @@ ram_df["RAM_GB"] = (
 )
 
 ram_df["RAM_GB"] = pd.to_numeric(
-    ram_df["RAM_GB"].str.lower().str.replace(" mb", "").str.replace(" gb", ""), errors="coerce"
+    ram_df["RAM_GB"].str.lower().str.replace(" mb", "").str.replace(" gb", ""),
+    errors="coerce",
 )
 ram_df["RAM_GB"] = np.where(
     ram_df["name"].str.lower().str.contains(" mb"),
@@ -2170,25 +2460,45 @@ ram_df["RAM_GB"] = np.where(
 
 # bin RAM sizes
 ram_df["RAM_GB_bins"] = "Others"
-ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 0, "0", ram_df["RAM_GB_bins"])
-ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 4, "4", ram_df["RAM_GB_bins"])
-ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 8, "8", ram_df["RAM_GB_bins"])
-ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 16, "16", ram_df["RAM_GB_bins"])
-ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 32, "32", ram_df["RAM_GB_bins"])
-ram_df["RAM_GB_bins"] = np.where(ram_df["RAM_GB"] >= 64, "64", ram_df["RAM_GB_bins"])
+ram_df["RAM_GB_bins"] = np.where(
+    ram_df["RAM_GB"] >= 0, "0", ram_df["RAM_GB_bins"]
+)
+ram_df["RAM_GB_bins"] = np.where(
+    ram_df["RAM_GB"] >= 4, "4", ram_df["RAM_GB_bins"]
+)
+ram_df["RAM_GB_bins"] = np.where(
+    ram_df["RAM_GB"] >= 8, "8", ram_df["RAM_GB_bins"]
+)
+ram_df["RAM_GB_bins"] = np.where(
+    ram_df["RAM_GB"] >= 16, "16", ram_df["RAM_GB_bins"]
+)
+ram_df["RAM_GB_bins"] = np.where(
+    ram_df["RAM_GB"] >= 32, "32", ram_df["RAM_GB_bins"]
+)
+ram_df["RAM_GB_bins"] = np.where(
+    ram_df["RAM_GB"] >= 64, "64", ram_df["RAM_GB_bins"]
+)
 
 # get only last 9 years or x-axis will not fit all labels
 ram_df = ram_df[ram_df["date"].dt.year >= (ram_df["date"].max().year - 9)]
 
 # get percentages and also add a cumsum column
-ram_grp_df = ram_df.groupby(["date", "RAM_GB_bins"])["percentage"].sum().reset_index()
+ram_grp_df = (
+    ram_df.groupby(["date", "RAM_GB_bins"])["percentage"].sum().reset_index()
+)
 
-ram_grp_df["RAM_numeric"] = pd.to_numeric(ram_grp_df["RAM_GB_bins"], errors="coerce")
-ram_grp_df = ram_grp_df.sort_values(["date", "RAM_numeric"], ascending=[True, False])
+ram_grp_df["RAM_numeric"] = pd.to_numeric(
+    ram_grp_df["RAM_GB_bins"], errors="coerce"
+)
+ram_grp_df = ram_grp_df.sort_values(
+    ["date", "RAM_numeric"], ascending=[True, False]
+)
 ram_grp_df["cumsum"] = ram_grp_df.groupby("date")["percentage"].cumsum()
 ram_grp_df.loc[ram_grp_df["RAM_GB_bins"] == "Others", "cumsum"] = np.nan
 
-ram_grp_df["quarter"] = ram_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+ram_grp_df["quarter"] = (
+    ram_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+)
 ram_grp_quarter_df = (
     ram_grp_df.groupby(["quarter", "RAM_GB_bins"])[["percentage", "cumsum"]]
     .mean()
@@ -2235,7 +2545,9 @@ for l in [25, 50, 75]:
     cur_stats_txt = cur_stats_txt + " line " + str(reference_line) + "\n"
 
 for ops in ["4", "8", "16", "32", "64"]:
-    ram_stats_df = ram_grp_quarter_df[ram_grp_quarter_df["RAM_GB_bins"] == ops].copy()
+    ram_stats_df = ram_grp_quarter_df[
+        ram_grp_quarter_df["RAM_GB_bins"] == ops
+    ].copy()
     ram_stats_df["cumsum"] = ram_stats_df["cumsum"] * 100
 
     # ensure all years have values
@@ -2247,7 +2559,9 @@ for ops in ["4", "8", "16", "32", "64"]:
             ram_value = float(ram_q_df["cumsum"].values[0])
             last_known_value = ram_value
         else:
-            ram_value = last_known_value  # set non existing to last known value
+            ram_value = (
+                last_known_value  # set non existing to last known value
+            )
         ram_stats_list.append(ram_value)
 
     cur_stats_txt = cur_stats_txt + "    line " + str(ram_stats_list) + "\n"
@@ -2259,7 +2573,9 @@ legend_str = """$${min \space RAM: \space\space\space
 \color{#d92080}32GB\space\space\space
 \color{#8a52a6}64GB\space\space\space}$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2286,7 +2602,10 @@ ram_platform_df["RAM_GB"] = (
 )
 
 ram_platform_df["RAM_GB"] = pd.to_numeric(
-    ram_platform_df["RAM_GB"].str.lower().str.replace(" mb", "").str.replace(" gb", ""),
+    ram_platform_df["RAM_GB"]
+    .str.lower()
+    .str.replace(" mb", "")
+    .str.replace(" gb", ""),
     errors="coerce",
 )
 ram_platform_df["RAM_GB"] = np.where(
@@ -2338,14 +2657,23 @@ for platform in ["pc", "linux", "mac"]:
     ram_platform_grp_df = ram_platform_grp_df.sort_values(
         ["date", "RAM_numeric"], ascending=[True, False]
     )
-    ram_platform_grp_df["cumsum"] = ram_platform_grp_df.groupby("date")["percentage"].cumsum()
-    ram_platform_grp_df.loc[ram_platform_grp_df["RAM_GB_bins"] == "Others", "cumsum"] = np.nan
+    ram_platform_grp_df["cumsum"] = ram_platform_grp_df.groupby("date")[
+        "percentage"
+    ].cumsum()
+    ram_platform_grp_df.loc[
+        ram_platform_grp_df["RAM_GB_bins"] == "Others", "cumsum"
+    ] = np.nan
 
     ram_platform_grp_df["quarter"] = (
-        ram_platform_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+        ram_platform_grp_df["date"]
+        .dt.to_period("Q")
+        .astype(str)
+        .str.slice(2, 6)
     )
     ram_platform_grp_quarter_df = (
-        ram_platform_grp_df.groupby(["quarter", "RAM_GB_bins"])[["percentage", "cumsum"]]
+        ram_platform_grp_df.groupby(["quarter", "RAM_GB_bins"])[
+            ["percentage", "cumsum"]
+        ]
         .mean()
         .reset_index()
     )
@@ -2377,7 +2705,9 @@ for platform in ["pc", "linux", "mac"]:
     cur_stats_txt = (
         cur_stats_txt
         + "    x-axis "
-        + str([i for i in ram_grp_quarter_df["quarter"].unique()]).replace("'", "")
+        + str([i for i in ram_grp_quarter_df["quarter"].unique()]).replace(
+            "'", ""
+        )
         + "\n"
     )
     cur_stats_txt = cur_stats_txt + '    y-axis "%" \n'
@@ -2399,15 +2729,23 @@ for platform in ["pc", "linux", "mac"]:
         ram_platform_stats_list = []
         last_known_value = 0
         for q in ram_grp_quarter_df["quarter"].unique():
-            ram_platform_q_df = ram_platform_stats_df[ram_platform_stats_df["quarter"] == q]
+            ram_platform_q_df = ram_platform_stats_df[
+                ram_platform_stats_df["quarter"] == q
+            ]
             if len(ram_platform_q_df) > 0:
-                ram_platform_value = float(ram_platform_q_df["cumsum"].values[0])
+                ram_platform_value = float(
+                    ram_platform_q_df["cumsum"].values[0]
+                )
                 last_known_value = ram_platform_value
             else:
-                ram_platform_value = last_known_value  # set non existing to last known value
+                ram_platform_value = (
+                    last_known_value  # set non existing to last known value
+                )
             ram_platform_stats_list.append(ram_platform_value)
 
-        cur_stats_txt = cur_stats_txt + "    line " + str(ram_platform_stats_list) + "\n"
+        cur_stats_txt = (
+            cur_stats_txt + "    line " + str(ram_platform_stats_list) + "\n"
+        )
 
     legend_str = """$${min \space RAM: \space\space\space
     \color{#51a8a6}4GB\space\space\space
@@ -2416,7 +2754,13 @@ for platform in ["pc", "linux", "mac"]:
     \color{#d92080}32GB\space\space\space
     \color{#8a52a6}64GB\space\space\space}$$"""
 
-    readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+    readme_content = (
+        readme_content
+        + cur_stats_txt
+        + "``` \n"
+        + legend_str
+        + "\n\n<br/>\n\n"
+    )
 
 # %% 6 - Half-Life 3
 # Trust me Bro, I got this
@@ -2473,8 +2817,12 @@ hl3_grp_df.loc[is_nov, "ratio_of_3"] += (
 ) * 0.0003
 
 # sum to quarterly averages
-hl3_grp_df["quarter"] = hl3_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
-hl3_grp_quarter_df = hl3_grp_df.groupby(["quarter"])["ratio_of_3"].mean().reset_index()
+hl3_grp_df["quarter"] = (
+    hl3_grp_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
+)
+hl3_grp_quarter_df = (
+    hl3_grp_df.groupby(["quarter"])["ratio_of_3"].mean().reset_index()
+)
 hl3_grp_quarter_df["ratio_of_3"] = hl3_grp_quarter_df["ratio_of_3"] + 0.333
 
 ### competently add title and x-axis & y-axis info
@@ -2509,7 +2857,9 @@ cur_stats_txt = (
 )
 y_axis_max = int((hl3_grp_quarter_df["ratio_of_3"].max() * 100).round() + 1)
 y_axis_min = int((hl3_grp_quarter_df["ratio_of_3"].min() * 100).round() - 1)
-cur_stats_txt = cur_stats_txt + f'    y-axis "%" {y_axis_min }-->{y_axis_max} \n'
+cur_stats_txt = (
+    cur_stats_txt + f'    y-axis "%" {y_axis_min }-->{y_axis_max} \n'
+)
 cur_stats_txt = (
     cur_stats_txt
     + "    line "
@@ -2519,7 +2869,9 @@ cur_stats_txt = (
 
 legend_str = """$${\color{#DB4105} HalfLife \space 3 \space confirmed \space\space\space}$$"""
 
-readme_content = readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+readme_content = (
+    readme_content + cur_stats_txt + "``` \n" + legend_str + "\n\n<br/>\n\n"
+)
 
 
 # %% 7 - Save to File
