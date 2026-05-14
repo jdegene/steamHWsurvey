@@ -116,7 +116,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#32CD32,#cfb1ac,#808080"
+            plotColorPalette: "#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#32CD32,#c6a29c,#808080"
 
 --- 
 
@@ -136,7 +136,7 @@ xychart-beta
     line [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.19, 2.0233333333333334, 5.463333333333334, 8.09, 11.408333333333324, 13.40999999999998]
     line [0.8199999999999998, 0.31000000000000005, 0, 0.48, 0.5700000000000001, 0.6133333333333334, 0.67, 0.49000000000000005, 0.71, 0.7766666666666667, 1.3333333333333335, 1.6733333333333333, 1.95, 2.796666666666667, 2.833333333333333, 1.6500000000000001, 1.6833333333333336, 1.7933333333333332, 1.8233333333333335, 1.7466666666666668, 1.4766666666666666, 1.5733333333333335, 1.1266666666666667, 1.2933333333333332, 0.8833333333333334, 0.5050000000000001, 0.32666666666666666, 0.35666666666666674, 0.21, 0.4, 0.15, 0.4, 0.6166666666666667, 1.06, 1.005, 0]
 ``` 
-$${\color{#51a8a6}700\space\space\space\color{#f9a900}800\space\space\space\color{#f92800}900\space\space\space\color{#d92080}1000\space\space\space\color{#8a52a6}2000\space\space\space\color{#46a2da}3000\space\space\space\color{#32CD32}4000\space\space\space\color{#cfb1ac}5000\space\space\space\color{#808080}Other\space\space\space}$$
+$${\color{#51a8a6}700\space\space\space\color{#f9a900}800\space\space\space\color{#f92800}900\space\space\space\color{#d92080}1000\space\space\space\color{#8a52a6}2000\space\space\space\color{#46a2da}3000\space\space\space\color{#32CD32}4000\space\space\space\color{#c6a29c}5000\space\space\space\color{#808080}Other\space\space\space}$$
 
 <br/>
 
@@ -476,7 +476,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#F4BC00,#cfb1ac"
+            plotColorPalette: "#F4BC00,#c6a29c"
 
 --- 
 
@@ -489,7 +489,7 @@ xychart-beta
 ``` 
 $${\color{#00A4EF}Windows\space\space\space
 \color{#F4BC00}Linux\space\space\space
-\color{#cfb1ac}Mac\space\space\space
+\color{#c6a29c}Mac\space\space\space
 }$$
 
 <br/>
@@ -879,7 +879,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#32CD32,#cfb1ac,#808080"
+            plotColorPalette: "#404040,#404040,#404040,#51a8a6,#f9a900,#f92800,#d92080,#8a52a6,#46a2da,#32CD32,#c6a29c,#808080"
 
 --- 
 
@@ -900,7 +900,7 @@ xychart-beta
     line [15.83, 16.39, 16.23, 17.299999999999997, 14.360000000000001, 15.35, 15.260000000000002, 17.51, 16.05, 17.02, 20.03, 21.45, 15.0, 15.920000000000002, 16.1, 16.73, 13.170000000000002, 14.099999999999998, 16.91, 13.469999999999999, 11.49, 11.77]
     line [21.389999999999997, 17.88, 17.45, 17.06, 15.02, 14.730000000000002, 14.91, 13.8, 13.350000000000001, 13.28, 13.639999999999999, 13.780000000000001, 11.37, 11.850000000000001, 10.879999999999999, 13.36, 12.3, 12.229999999999999, 13.18, 11.81, 11.55, 12.04999999999998]
 ``` 
-$${\color{#51a8a6}HTC Vive\space\space\space\color{#f9a900}Meta Quest 3\space\space\space\color{#f92800}Meta Quest 3S\space\space\space\color{#d92080}Oculus Quest 2\space\space\space\color{#8a52a6}Oculus Rift\space\space\space\color{#46a2da}Oculus Rift S\space\space\space\color{#32CD32}Pico 4\space\space\space\color{#cfb1ac}Valve Index HMD\space\space\space\color{#808080}Other\space\space\space}$$
+$${\color{#51a8a6}HTC Vive\space\space\space\color{#f9a900}Meta Quest 3\space\space\space\color{#f92800}Meta Quest 3S\space\space\space\color{#d92080}Oculus Quest 2\space\space\space\color{#8a52a6}Oculus Rift\space\space\space\color{#46a2da}Oculus Rift S\space\space\space\color{#32CD32}Pico 4\space\space\space\color{#c6a29c}Valve Index HMD\space\space\space\color{#808080}Other\space\space\space}$$
 
 <br/>
 

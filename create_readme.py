@@ -298,7 +298,7 @@ nvidia_color_list = [
     "#8a52a6",
     "#46a2da",
     "#32CD32",
-    "#cfb1ac",  # "#FFFFFF",
+    "#c6a29c",  # "#FFFFFF",
     "#808080",
 ]
 cur_stats_txt = (
@@ -1284,7 +1284,7 @@ config:
         
     themeVariables:
         xyChart:
-            plotColorPalette: "#F4BC00,#cfb1ac"
+            plotColorPalette: "#F4BC00,#c6a29c"
 
 --- 
 """
@@ -1325,7 +1325,7 @@ for ops in ["Linux", "MacOS"]:
 
 legend_str = """$${\color{#00A4EF}Windows\space\space\space
 \color{#F4BC00}Linux\space\space\space
-\color{#cfb1ac}Mac\space\space\space
+\color{#c6a29c}Mac\space\space\space
 }$$"""
 
 readme_content = (
@@ -2345,7 +2345,7 @@ vr_color_list = [
     "#8a52a6",
     "#46a2da",
     "#32CD32",
-    "#cfb1ac",
+    "#c6a29c",
     "#808080",
 ]
 cur_stats_txt = (
