@@ -856,7 +856,7 @@ cur_stats_txt = (
     cur_stats_txt
     + """
 xychart-beta
-    title "AMD Midrange cards in months after (first seen). All variants."
+    title "AMD entry-level cards in months after (first seen). All variants."
 """
 )
 cur_stats_txt = (
@@ -1149,7 +1149,7 @@ readme_content = (
     + "* **Used Method:** the visible OS versions from the main page are matched to the detailed platform page to scale the numbers correctly.\n"
     + "* **The Math:** In April 2026, the 10 visible Linux distros on the main page summed to **1.13%** of *all Steam users*. On the Linux-specific page, those exact same 10 distros accounted for **31.2%** of *all Linux users*.\n"
     + "* **The Result:** If 31.2% of Linux users equals 1.13% of total Steam users, then 100% of Linux users equals **3.62%**.\n"
-    + "* **The Discrepancy:** Steam published a headline Linux share of **4.52%** for that month. Because Steam uses inconsistent user-base denominators between their overview and detail pages, their math breaks. These charts plot the mathematically reconstructed data (3.62%) rather than the _faulty_ headline numbers.\n\n"
+    + "* **The Discrepancy:** Steam published a headline Linux share of **4.52%** for that month. Because Steam uses inconsistent user-base denominators between their overview and detail pages, their math breaks. These charts plot the mathematically reconstructed data (3.62%) rather than the potentially _faulty_ headline numbers.\n\n"
 )
 
 os_df = df[df["category"] == "OS Version"].copy()
