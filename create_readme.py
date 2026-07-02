@@ -43,6 +43,7 @@ readme_content = """# Files Description
 * Data from December 2024 (uploaded January 2025) did show larger inconsistencies as mentioned by [Devaniti](https://github.com/jdegene/steamHWsurvey/issues/6), where sums can add up to mathmatically incorrect >100%. The data remained as is throughout January (i.e. was not revised by Steam). The following February upload (of January 2025 data) seems to be correct again, and was changed around February 19th 2025 by Steam to account for correct changes in relation to December (e.g. the first entry for Windows 11 from beginning of February changed from  "-0.0150,0.5346" to "0.0034,0.5346" at that date). The current dataset contains the revised data from February 19th 2025 AND the recalculated values for December 2024 using the revised changes. For a pre-calculated version of December 2024 data see commit #7017769
 
 
+
 ## Official Information posted on the Steam Hardware Survey / Steam Site
 
 [Steam Client Beta - February 24th 2026](https://store.steampowered.com/news/group/4397053/view/512983651355462232)
@@ -51,6 +52,11 @@ Hardware Survey / System Information
 
 * Fixed an issue where VRAM on some graphics cards was not reported correctly (-1)
 * In the case of multiple display adapters, we now select the one with the most VRAM to display and report to Steam
+
+
+[Steam Client Beta - September 23rd](https://store.steampowered.com/news/group/4397053/view/545621427784515586)
+
+* Added detecting if Secure Boot and a TPM are enabled on the current machine. This information is displayed under Help > System Information. It is now also collected when opting into the Steam Hardware Survey.
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2229,7 +2235,7 @@ vr_df = df[df["category"] == "VR Headsets"].copy()
 ## 4.1 Steam users with VR Headsets
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 vr_suwVRH_df = vr_df[vr_df["name"] == "Steam users with VR Headsets"].copy()
-vr_suwVRH_df["short_date"] = vr_suwVRH_df["date"].dt.strftime("%y-%m")
+vr_suwVRH_df["short_date"] = vr_suwVRH_df["date"].dt.strftime("%y%m")
 
 vr_suwVRH_df["quarter"] = (
     vr_suwVRH_df["date"].dt.to_period("Q").astype(str).str.slice(2, 6)
