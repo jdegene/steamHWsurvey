@@ -1608,7 +1608,7 @@ readme_content = (
 
 readme_content = readme_content + """### Mac OSX \n"""
 
-versions_list = [10, 11, 12, 13, 14, 15, 26]
+versions_list = [10, 11, 12, 13, 14, 15, 26, 27]
 
 mac_df = df_platform[
     (df_platform["platform"] == "mac")
@@ -1648,6 +1648,7 @@ osx_color_palette = [
     "#8a52a6",
     "#46a2da",
     "#32CD32",
+    "#FFFDD0",
     "#808080",
 ]
 cur_stats_txt = (
