@@ -18,7 +18,7 @@
 
 ## Watchouts & Known Discrepancies
 
-* As mentioned by [luxzg](https://github.com/jdegene/steamHWsurvey/issues/1): some video card names have stuff like "(R)" or "Series" added to the names, and thus could introduce duplicates to the data
+* As mentioned by [luxzg](https://github.com/jdegene/steamHWsurvey/issues/1): some video card names have stuff like "(R)" or "Series" added to the names, and thus could introduce duplicates to the data. [Devaniti](https://github.com/jdegene/steamHWsurvey/issues/15) GPU name descriptions sometimes use several whitespaces within itself and thus show up as different variants ("RTX 5080 Laptop" vs. "RTX 5080  Laptop")
 
 * After an initial release of December 2022 hardware data that showed [some odd discrepancies](https://archive.is/XyyNP), Steam reuploaded a revised dataset. The current shs.csv uses the revised data (original data can be found in first commit for December 2022 data)
 
