@@ -327,7 +327,9 @@ def short_name(name):
     return name.replace("Laptop GPU", "Lap").replace("Laptop", "Lap")
 
 
-abbr_map = {}  # abbreviation -> readable short name (shown below the chart)
+abbr_map = (
+    {}
+)  # abbreviation -> readable short name (only used to keep abbreviations unique)
 
 
 def bar_label(gpu, num_quarters):
@@ -434,18 +436,7 @@ for rank in range(1, top_n + 1):
             f"{run[-1].end_time.strftime('%Y-%m-%d')}\n"
         )
 
-# legend for abbreviations, written below the chart
-abbr_txt = ""
-if abbr_map:
-    abbr_txt = (
-        "**Abbreviations:** "
-        + ", ".join(f"`{a}` = {full}" for a, full in sorted(abbr_map.items()))
-        + "\n\n"
-    )
-
-readme_content = (
-    readme_content + cur_stats_txt + FENCE + " \n\n" + abbr_txt + "<br/>\n\n"
-)
+readme_content = readme_content + cur_stats_txt + FENCE + " \n\n<br/>\n\n"
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

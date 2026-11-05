@@ -265,8 +265,6 @@ gantt
     RTX3050 :2026-10-01, 2026-12-31
 ``` 
 
-**Abbreviations:** `1050Ti` = GTX 1050 Ti, `3060Lap` = RTX 3060 Lap, `3060Ti` = RTX 3060 Ti, `4060Lap` = RTX 4060 Lap, `4060Ti` = RTX 4060 Ti, `750Ti` = GTX 750 Ti
-
 <br/>
 
 ### NVIDIA Inter Generation Comparison
