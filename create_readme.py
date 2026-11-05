@@ -222,7 +222,239 @@ readme_content = (
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.1 NVIDIA combined generation shares. Adds all variants together
+## 3.1.1 Quarterly - Top x GPUs per quarter (uses Video Card Description, all variants merged)
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+readme_content = (
+    readme_content
+    + """### Top 5 GPUs per Quarter
+
+One row per rank (Rank 1 = most popular GPU of the quarter, based on the quarterly average). Catch-all entries that are not a single GPU ("Other", "AMD Radeon Graphics", "Intel UHD Graphics" without model number, "Intel Arc Graphics") are excluded.
+A bar is an uninterrupted period in which the same GPU held that rank. Green = NVIDIA, red = AMD, blue = Intel.
+The grey top row ("Rank 1 Share") shows the share of the Rank 1 GPU per quarter in % of all Steam users (one decimal).
+Whitespace and suffixes like "(R)" or "Series" are normalized, so duplicates are merged. \n
+"""
+)
+
+FENCE = "`" * 3  # avoids literal triple backticks inside this code block
+
+top_n = 5
+num_years_back = 8
+chart_width = 2040  # set to None to let Mermaid choose the width
+bar_height = 22  # default is 20 -> 110%
+bar_gap = 4.4  # default is 4 -> 110%
+px_per_char = 7.5  # rough label width, used to decide if a name fits in a bar
+
+# Mermaid's gantt parser may treat a "%" right after the first character as a
+# comment (e.g. "9%"). One decimal ("9.3%") avoids that. If labels still vanish,
+# switch to the full-width percent sign: percent_sign = "\uFF05"
+percent_sign = "%"
+
+topx_gpu_df = df[df["category"] == "Video Card Description"].copy()
+
+# normalize names: remove "(R)", "(TM)", "Series", collapse whitespace
+topx_gpu_df["name"] = (
+    topx_gpu_df["name"]
+    .str.replace(r"\((R|TM)\)", "", regex=True, case=False)
+    .str.replace(r"\bSeries\b", "", regex=True, case=False)
+    .str.replace(r"\s+", " ", regex=True)
+    .str.strip()
+)
+
+# generic catch-all entries are not single GPUs -> remove before ranking
+# (patterns are matched against the normalized name, case-insensitive)
+generic_gpu_patterns = [
+    r"others?",
+    r"AMD Radeon Graphics",  # also covers "Radeon(TM) Graphics" after normalization
+    r"Intel (UHD |HD )?Graphics",  # without model number
+    r"Intel Arc Graphics",  # Steam does not distinguish Arc models
+    # r"Intel Iris Xe Graphics",  # a family, not a single card -> uncomment to exclude
+]
+generic_mask = topx_gpu_df["name"].str.fullmatch(
+    "|".join(f"(?:{p})" for p in generic_gpu_patterns), case=False
+)
+topx_gpu_df = topx_gpu_df[~generic_mask & (topx_gpu_df["name"] != "")]
+
+# keep only last x years
+topx_gpu_df = topx_gpu_df[
+    topx_gpu_df["date"].dt.year
+    >= (topx_gpu_df["date"].max().year - num_years_back)
+]
+
+# sum per month and GPU (merges duplicate variants within a month)
+topx_month_df = (
+    topx_gpu_df.groupby(["date", "name"])["percentage"].sum().reset_index()
+)
+topx_month_df["quarter"] = topx_month_df["date"].dt.to_period("Q")
+
+# quarterly average in %: months where a GPU is absent count as 0
+months_per_quarter = topx_month_df.groupby("quarter")["date"].nunique()
+topx_pivot = (
+    topx_month_df.pivot_table(
+        index="quarter",
+        columns="name",
+        values="percentage",
+        aggfunc="sum",
+        fill_value=0,
+    ).div(months_per_quarter, axis=0)
+    * 100
+)
+
+# ranked GPU names per quarter, best first
+topx_ranked = {
+    q: list(topx_pivot.loc[q].nlargest(top_n).index) for q in topx_pivot.index
+}
+quarter_list = list(topx_pivot.index)
+
+# approximate width of one quarter in px -> how many characters fit in a bar
+quarter_px = ((chart_width or 1200) - 150) / len(quarter_list)
+
+
+def gpu_vendor(name):
+    n = name.lower()
+    if "nvidia" in n:
+        return "NVIDIA"
+    if re.search(r"\bamd\b|\bati\b|radeon", n):
+        return "AMD"
+    if "intel" in n:
+        return "Intel"
+    return "Unknown"
+
+
+def gantt_label(name):
+    """Colons, semicolons, hashes and commas would break the gantt syntax."""
+    return re.sub(r"[:;#,]", " ", name).strip()
+
+
+def short_name(name):
+    """Readable short name with spaces, vendor prefix removed."""
+    name = re.sub(r"^(NVIDIA GeForce|NVIDIA|AMD|Intel)\s+", "", name)
+    return name.replace("Laptop GPU", "Lap").replace("Laptop", "Lap")
+
+
+abbr_map = {}  # abbreviation -> readable short name (shown below the chart)
+
+
+def bar_label(gpu, num_quarters):
+    """Full name without spaces if it fits, otherwise shorter forms."""
+    readable = short_name(gpu)
+    max_chars = int(num_quarters * quarter_px / px_per_char)
+
+    # tier 1: no whitespace
+    tier1 = re.sub(r"\s+", "", readable)
+    if len(tier1) <= max_chars:
+        return gantt_label(tier1)
+
+    # tier 2: drop family prefix (RTX 4060 Ti -> 4060Ti)
+    tier2 = re.sub(
+        r"\s+", "", re.sub(r"^(RTX|GTX|GTS|GT|Radeon RX|RX)\s+", "", readable)
+    )
+    candidate = tier2
+    if len(tier2) > max_chars or tier2 == tier1:
+        # tier 3: initials of words, numbers are kept (Steam Deck GPU -> SDG)
+        tokens = readable.split()
+        candidate = "".join(
+            t if any(c.isdigit() for c in t) else t[0].upper() for t in tokens
+        )
+
+    # make abbreviation unique if it clashes with a different GPU
+    abbr, n = candidate, 2
+    while abbr in abbr_map and abbr_map[abbr] != readable:
+        abbr = f"{candidate}{n}"
+        n += 1
+    abbr_map[abbr] = readable
+    return gantt_label(abbr)
+
+
+# mermaid gantt tags -> colors set in config below
+# (default = NVIDIA, crit = AMD, active = Intel, done = Unknown vendor / share row)
+vendor_tag = {
+    "NVIDIA": "",
+    "AMD": "crit, ",
+    "Intel": "active, ",
+    "Unknown": "done, ",
+}
+
+width_line = f"        useWidth: {chart_width}\n" if chart_width else ""
+cur_stats_txt = (
+    FENCE
+    + "mermaid\n"
+    + f"""---
+config:
+    gantt:
+        displayMode: compact
+{width_line}        barHeight: {bar_height}
+        barGap: {bar_gap}
+        leftPadding: 100
+    themeVariables:
+        taskBkgColor: "#76b900"
+        taskBorderColor: "#4d7700"
+        critBkgColor: "#ED1C24"
+        critBorderColor: "#a00f15"
+        activeTaskBkgColor: "#0071C5"
+        activeTaskBorderColor: "#004a82"
+        doneTaskBkgColor: "#808080"
+        doneTaskBorderColor: "#505050"
+        taskTextColor: "#ffffff"
+        taskTextOutsideColor: "#808080"
+
+---
+gantt
+    title Top {top_n} GPUs per Quarter
+    dateFormat YYYY-MM-DD
+    axisFormat %Y
+    tickInterval 1year
+    todayMarker off
+"""
+)
+
+# top row: share of the rank 1 GPU per quarter, one decimal
+cur_stats_txt += "    section Rank 1 Share\n"
+for q in quarter_list:
+    top_gpu = topx_ranked[q][0]
+    share = topx_pivot.loc[q, top_gpu]
+    cur_stats_txt += (
+        f"    {share:.1f}{percent_sign} :done, {q.start_time.strftime('%Y-%m-%d')}, "
+        f"{q.end_time.strftime('%Y-%m-%d')}\n"
+    )
+
+# one row per rank
+for rank in range(1, top_n + 1):
+    # runs: consecutive quarters in which the same GPU holds this rank
+    runs = []  # list of (gpu, [quarters])
+    for q in quarter_list:
+        if len(topx_ranked[q]) < rank:
+            continue
+        gpu = topx_ranked[q][rank - 1]
+        if runs and runs[-1][0] == gpu and runs[-1][1][-1] + 1 == q:
+            runs[-1][1].append(q)
+        else:
+            runs.append((gpu, [q]))
+
+    cur_stats_txt += f"    section Rank {rank}\n"
+    for gpu, run in runs:
+        cur_stats_txt += (
+            f"    {bar_label(gpu, len(run))} :{vendor_tag[gpu_vendor(gpu)]}"
+            f"{run[0].start_time.strftime('%Y-%m-%d')}, "
+            f"{run[-1].end_time.strftime('%Y-%m-%d')}\n"
+        )
+
+# legend for abbreviations, written below the chart
+abbr_txt = ""
+if abbr_map:
+    abbr_txt = (
+        "**Abbreviations:** "
+        + ", ".join(f"`{a}` = {full}" for a, full in sorted(abbr_map.items()))
+        + "\n\n"
+    )
+
+readme_content = (
+    readme_content + cur_stats_txt + FENCE + " \n\n" + abbr_txt + "<br/>\n\n"
+)
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## 3.1.2 NVIDIA combined generation shares. Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 readme_content = (
@@ -384,7 +616,7 @@ readme_content = (
 )
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.2 NVIDIA xx90s market penetration in months after "first seen month". Adds all variants together
+## 3.1.3 NVIDIA xx90s market penetration in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 readme_content = (
@@ -458,7 +690,7 @@ readme_content = (
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.3 NVIDIA xx80s market penetration in months after "first seen month". Adds all variants together
+## 3.1.4 NVIDIA xx80s market penetration in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -522,7 +754,7 @@ readme_content = (
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.4 NVIDIA xx70s market penetration in months after "first seen month". Adds all variants together
+## 3.1.5 NVIDIA xx70s market penetration in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -586,7 +818,7 @@ readme_content = (
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.5 NVIDIA xx60s market penetration in months after "first seen month". Adds all variants together
+## 3.1.6 NVIDIA xx60s market penetration in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -650,7 +882,7 @@ readme_content = (
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.6 AMD high-end cards in months after "first seen month". Adds all variants together
+## 3.1.7 AMD high-end cards in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 readme_content = (
@@ -724,7 +956,7 @@ readme_content = (
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.7 AMD upper-midrange cards in months after "first seen month". Adds all variants together
+## 3.1.8 AMD upper-midrange cards in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -788,7 +1020,7 @@ readme_content = (
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.8 AMD midrange cards in months after "first seen month". Adds all variants together
+## 3.1.9 AMD midrange cards in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -852,7 +1084,7 @@ readme_content = (
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.9 AMD entry-level cards in months after "first seen month". Adds all variants together
+## 3.1.10 AMD entry-level cards in months after "first seen month". Adds all variants together
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 num_months = 36
 
@@ -915,7 +1147,7 @@ readme_content = (
 )
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.10 Intel Arc
+## 3.1.11 Intel Arc
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 readme_content = (
     readme_content
@@ -1003,7 +1235,7 @@ readme_content = (
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## 3.1.11 VRAM
+## 3.1.12 VRAM
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 readme_content = readme_content + """\n### VRAM \n"""
