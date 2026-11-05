@@ -108,20 +108,14 @@ $${\color{#76b900}NIVIDA\space\space\space
 <br/>
 
 ### Top 5 GPUs per Quarter
-
-One row per rank (Rank 1 = most popular GPU of the quarter, based on the quarterly average). Catch-all entries that are not a single GPU ("Other", "AMD Radeon Graphics", "Intel UHD Graphics" without model number, "Intel Arc Graphics") are excluded.
-A bar is an uninterrupted period in which the same GPU held that rank. Green = NVIDIA, red = AMD, blue = Intel.
-The grey top row ("Rank 1 Share") shows the share of the Rank 1 GPU per quarter in % of all Steam users (one decimal).
-Whitespace and suffixes like "(R)" or "Series" are normalized, so duplicates are merged. 
-
 ```mermaid
 ---
 config:
     gantt:
         displayMode: compact
         useWidth: 2040
-        barHeight: 22
-        barGap: 4.4
+        barHeight: 44
+        barGap: 8.8
         leftPadding: 100
     themeVariables:
         taskBkgColor: "#76b900"

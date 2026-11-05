@@ -228,11 +228,6 @@ readme_content = (
 readme_content = (
     readme_content
     + """### Top 5 GPUs per Quarter
-
-One row per rank (Rank 1 = most popular GPU of the quarter, based on the quarterly average). Catch-all entries that are not a single GPU ("Other", "AMD Radeon Graphics", "Intel UHD Graphics" without model number, "Intel Arc Graphics") are excluded.
-A bar is an uninterrupted period in which the same GPU held that rank. Green = NVIDIA, red = AMD, blue = Intel.
-The grey top row ("Rank 1 Share") shows the share of the Rank 1 GPU per quarter in % of all Steam users (one decimal).
-Whitespace and suffixes like "(R)" or "Series" are normalized, so duplicates are merged. \n
 """
 )
 
@@ -241,8 +236,8 @@ FENCE = "`" * 3  # avoids literal triple backticks inside this code block
 top_n = 5
 num_years_back = 8
 chart_width = 2040  # set to None to let Mermaid choose the width
-bar_height = 22  # default is 20 -> 110%
-bar_gap = 4.4  # default is 4 -> 110%
+bar_height = 44  # previous 22 -> doubled
+bar_gap = 8.8  # previous 4.4 -> doubled
 px_per_char = 7.5  # rough label width, used to decide if a name fits in a bar
 
 # Mermaid's gantt parser may treat a "%" right after the first character as a
